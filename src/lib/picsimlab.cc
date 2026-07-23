@@ -800,6 +800,8 @@ void CPICSimLab::SaveWorkspace(std::string fnpzw) {
             SystemCmd(PSC_REMOVEDIR, fname);
             sprintf(fname, "%s/code/%s/test/__pycache__", home, code_dst);
             SystemCmd(PSC_REMOVEDIR, fname);
+            sprintf(fname, "%s/code/%s/sdkconfig.PICSimLab", home, code_dst);
+            SystemCmd(PSC_REMOVEFILE, fname);
         }
     }
 

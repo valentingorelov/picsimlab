@@ -219,7 +219,7 @@ static const char platformio_ini[] =
 static const char platformio_ini_dbg[] =
     "debug_tool = custom\n"
     "debug_port = localhost:1234\n"
-    "debug_init_break = tbreak main\n"
+    "debug_init_break = tbreak %s\n"
     "debug_init_cmds =\n"
     "    define pio_reset_halt_target\n%s"
     "    end\n"

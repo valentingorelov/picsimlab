@@ -196,6 +196,7 @@ void CPWindow6::dirdialog1_EvOnClose(int retId) {
                     lxString env_extra = "";
                     lxString monitor_rst = "";
                     lxString ftype = "";
+                    lxString tbreak = "";
                     if (!bname.compare("Arduino Uno")) {
                         pioboard = "uno";
                         pioplatform = "atmelavr";
@@ -203,6 +204,7 @@ void CPWindow6::dirdialog1_EvOnClose(int retId) {
                         ledpin = "13";
                         hwpin = "19";
                         ftype = "hex";
+                        tbreak = "setup";
                     } else if (!bname.compare("Arduino Nano")) {
                         pioboard = "nanoatmega328";
                         pioplatform = "atmelavr";
@@ -210,6 +212,7 @@ void CPWindow6::dirdialog1_EvOnClose(int retId) {
                         ledpin = "13";
                         hwpin = "17";
                         ftype = "hex";
+                        tbreak = "setup";
                     } else if (!bname.compare("Arduino Mega")) {
                         pioboard = "megaatmega2560";
                         pioplatform = "atmelavr";
@@ -217,6 +220,7 @@ void CPWindow6::dirdialog1_EvOnClose(int retId) {
                         ledpin = "13";
                         hwpin = "26";
                         ftype = "hex";
+                        tbreak = "setup";
                     } else if (!bname.compare("Franzininho DIY")) {
                         pioboard = "attiny85";
                         pioplatform = "atmelavr";
@@ -225,14 +229,17 @@ void CPWindow6::dirdialog1_EvOnClose(int retId) {
                         hwpin = "6";
                         env_extra = "board_build.f_cpu = 16000000L\nbuild_flags = -DCLOCK_SOURCE=6\n";
                         ftype = "hex";
+                        tbreak = "setup";
                     } else if (!bname.compare("Blue Pill")) {
                         pioboard = "bluepill_f103c8";
                         pioplatform = "ststm32";
                         if (!framework.compare("Arduino")) {
                             pioframework = "arduino";
+                            tbreak = "setup";
                         } else {
                             pioframework = "cmsis";
                             pio_test = 0;
+                            tbreak = "main";
                         }
                         ledpin = "PC13";
                         hwpin = "2";
@@ -243,9 +250,11 @@ void CPWindow6::dirdialog1_EvOnClose(int retId) {
                         pioplatform = "ststm32";
                         if (!framework.compare("Arduino")) {
                             pioframework = "arduino";
+                            tbreak = "setup";
                         } else {
                             pioframework = "cmsis";
                             pio_test = 0;
+                            tbreak = "main";
                         }
                         ledpin = "PC12";
                         hwpin = "53";
@@ -256,8 +265,10 @@ void CPWindow6::dirdialog1_EvOnClose(int retId) {
                         pioplatform = "espressif32";
                         if (!framework.compare("Arduino")) {
                             pioframework = "arduino";
+                            tbreak = "setup";
                         } else {
                             pioframework = "espidf";
+                            tbreak = "app_main";
                         }
                         ledpin = "2";
                         hwpin = "24";
@@ -269,8 +280,10 @@ void CPWindow6::dirdialog1_EvOnClose(int retId) {
                         pioplatform = "espressif32";
                         if (!framework.compare("Arduino")) {
                             pioframework = "arduino";
+                            tbreak = "setup";
                         } else {
                             pioframework = "espidf";
+                            tbreak = "app_main";
                         }
                         ledpin = "2";
                         hwpin = "27";
@@ -284,6 +297,7 @@ void CPWindow6::dirdialog1_EvOnClose(int retId) {
                             pioframework = "";
                             ledpin = "P3_2";
                             hwpin = "12";
+                            tbreak = "main";
                         } else if (!pname.compare("STM8S103")) {
                             pioboard = "stm8sblue";
                             pioplatform = "ststm8";
@@ -291,6 +305,7 @@ void CPWindow6::dirdialog1_EvOnClose(int retId) {
                             ledpin = "4";
                             hwpin = "12";
                             env_extra = "board_build.f_cpu = 4000000L\n";
+                            tbreak = "setup";
                         }
                         gdb_debug = 0;
                         pio_test = 0;
@@ -385,7 +400,7 @@ void CPWindow6::dirdialog1_EvOnClose(int retId) {
                             (const char*)pioboard.c_str(), (const char*)pioframework.c_str(),
                             (const char*)env_extra.c_str(), (const char*)pioboard.c_str(), (const char*)ftype.c_str());
                     if (gdb_debug) {
-                        fprintf(fpio, platformio_ini_dbg, (const char*)monitor_rst.c_str(),
+                        fprintf(fpio, platformio_ini_dbg, (const char*)tbreak.c_str(), (const char*)monitor_rst.c_str(),
                                 (const char*)monitor_rst.c_str());
                     } else {
                         fprintf(fpio, "debug_tool = custom  #no debug support\n");

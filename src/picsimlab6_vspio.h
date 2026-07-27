@@ -23,8 +23,8 @@
    For e-mail suggestions :  lcgamboa@yahoo.com
    ######################################################################## */
 
-#ifndef CPWINDOW6D
-#define CPWINDOW6D
+#ifndef CPWINDOW6VSPIO
+#define CPWINDOW6VSPIO
 
 static const char blink_code[] =
     "/*\n"
@@ -303,4 +303,4 @@ static const char blink_test[] =
     "\n"
     "\n";
 
-#endif /*#CPWINDOW6D*/
+#endif /*#CPWINDOW6VSPIO*/

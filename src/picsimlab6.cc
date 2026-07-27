@@ -28,6 +28,7 @@
 #include "picsimlab6.h"
 #include "picsimlab1.h"
 #include "picsimlab6_d.cc"
+#include "picsimlab6_mplabx.h"
 #include "picsimlab6_vspio.h"
 
 #include "lib/picsimlab.h"
@@ -111,6 +112,8 @@ void CPWindow6::combo1_EvOnComboChange(CControl* control) {
             } else {
                 combo2.SetItems("Arduino,");
             }
+        } else if (!ide.compare("MPLAB X IDE")) {
+            combo2.SetItems("XC8,");
         } else {
             combo2.SetItems("N/A,");
         }
@@ -146,6 +149,8 @@ void CPWindow6::combo2_EvOnComboChange(CControl* control) {
             } else if (!framework.compare("None")) {
                 combo3.SetItems("Blink,");
             }
+        } else if (!ide.compare("MPLAB X IDE")) {
+            combo3.SetItems("Blink,");
         }
     }
 
@@ -182,255 +187,324 @@ void CPWindow6::dirdialog1_EvOnClose(int retId) {
                 return;
             } else {
                 if (PICSimLab.SystemCmd(PSC_CREATEDIR, prjdir.utf8_str()) == 0) {
-                    lxString fzip = PICSimLab.GetSharePath() + "prj_wizard/platformio.zip";
-                    PICSimLab.SystemCmd(PSC_UNZIPDIR, fzip.utf8_str(), (void*)((const char*)prjdir.utf8_str()));
+                    if (!ide.compare("PlatformIO IDE for VSCode")) {
+                        lxString fzip = PICSimLab.GetSharePath() + "prj_wizard/platformio.zip";
+                        PICSimLab.SystemCmd(PSC_UNZIPDIR, fzip.utf8_str(), (void*)((const char*)prjdir.utf8_str()));
 
-                    // board selection
-                    int gdb_debug = 1;
-                    int pio_test = 1;
-                    lxString pioboard = "";
-                    lxString pioplatform = "";
-                    lxString pioframework = "";
-                    lxString ledpin = "";
-                    lxString hwpin = "";
-                    lxString env_extra = "";
-                    lxString monitor_rst = "";
-                    lxString ftype = "";
-                    lxString tbreak = "";
-                    if (!bname.compare("Arduino Uno")) {
-                        pioboard = "uno";
-                        pioplatform = "atmelavr";
-                        pioframework = "arduino";
-                        ledpin = "13";
-                        hwpin = "19";
-                        ftype = "hex";
-                        tbreak = "setup";
-                    } else if (!bname.compare("Arduino Nano")) {
-                        pioboard = "nanoatmega328";
-                        pioplatform = "atmelavr";
-                        pioframework = "arduino";
-                        ledpin = "13";
-                        hwpin = "17";
-                        ftype = "hex";
-                        tbreak = "setup";
-                    } else if (!bname.compare("Arduino Mega")) {
-                        pioboard = "megaatmega2560";
-                        pioplatform = "atmelavr";
-                        pioframework = "arduino";
-                        ledpin = "13";
-                        hwpin = "26";
-                        ftype = "hex";
-                        tbreak = "setup";
-                    } else if (!bname.compare("Franzininho DIY")) {
-                        pioboard = "attiny85";
-                        pioplatform = "atmelavr";
-                        pioframework = "arduino";
-                        ledpin = "1";
-                        hwpin = "6";
-                        env_extra = "board_build.f_cpu = 16000000L\nbuild_flags = -DCLOCK_SOURCE=6\n";
-                        ftype = "hex";
-                        tbreak = "setup";
-                    } else if (!bname.compare("Blue Pill")) {
-                        pioboard = "bluepill_f103c8";
-                        pioplatform = "ststm32";
-                        if (!framework.compare("Arduino")) {
+                        // board selection
+                        int gdb_debug = 1;
+                        int pio_test = 1;
+                        lxString pioboard = "";
+                        lxString pioplatform = "";
+                        lxString pioframework = "";
+                        lxString ledpin = "";
+                        lxString hwpin = "";
+                        lxString env_extra = "";
+                        lxString monitor_rst = "";
+                        lxString ftype = "";
+                        lxString tbreak = "";
+                        if (!bname.compare("Arduino Uno")) {
+                            pioboard = "uno";
+                            pioplatform = "atmelavr";
                             pioframework = "arduino";
+                            ledpin = "13";
+                            hwpin = "19";
+                            ftype = "hex";
                             tbreak = "setup";
-                        } else {
-                            pioframework = "cmsis";
+                        } else if (!bname.compare("Arduino Nano")) {
+                            pioboard = "nanoatmega328";
+                            pioplatform = "atmelavr";
+                            pioframework = "arduino";
+                            ledpin = "13";
+                            hwpin = "17";
+                            ftype = "hex";
+                            tbreak = "setup";
+                        } else if (!bname.compare("Arduino Mega")) {
+                            pioboard = "megaatmega2560";
+                            pioplatform = "atmelavr";
+                            pioframework = "arduino";
+                            ledpin = "13";
+                            hwpin = "26";
+                            ftype = "hex";
+                            tbreak = "setup";
+                        } else if (!bname.compare("Franzininho DIY")) {
+                            pioboard = "attiny85";
+                            pioplatform = "atmelavr";
+                            pioframework = "arduino";
+                            ledpin = "1";
+                            hwpin = "6";
+                            env_extra = "board_build.f_cpu = 16000000L\nbuild_flags = -DCLOCK_SOURCE=6\n";
+                            ftype = "hex";
+                            tbreak = "setup";
+                        } else if (!bname.compare("Blue Pill")) {
+                            pioboard = "bluepill_f103c8";
+                            pioplatform = "ststm32";
+                            if (!framework.compare("Arduino")) {
+                                pioframework = "arduino";
+                                tbreak = "setup";
+                            } else {
+                                pioframework = "cmsis";
+                                pio_test = 0;
+                                tbreak = "main";
+                            }
+                            ledpin = "PC13";
+                            hwpin = "2";
+                            monitor_rst = "       monitor system_reset\n";
+                            ftype = "bin";
+                        } else if (!bname.compare("STM32 H103")) {
+                            pioboard = "olimex_f103";
+                            pioplatform = "ststm32";
+                            if (!framework.compare("Arduino")) {
+                                pioframework = "arduino";
+                                tbreak = "setup";
+                            } else {
+                                pioframework = "cmsis";
+                                pio_test = 0;
+                                tbreak = "main";
+                            }
+                            ledpin = "PC12";
+                            hwpin = "53";
+                            monitor_rst = "       monitor system_reset\n";
+                            ftype = "bin";
+                        } else if (!bname.compare("ESP32-DevKitC")) {
+                            pioboard = "esp32dev";
+                            pioplatform = "espressif32";
+                            if (!framework.compare("Arduino")) {
+                                pioframework = "arduino";
+                                tbreak = "setup";
+                            } else {
+                                pioframework = "espidf";
+                                tbreak = "app_main";
+                            }
+                            ledpin = "2";
+                            hwpin = "24";
+                            monitor_rst = "       monitor system_reset\n";
+                            env_extra = "board_build.flash_mode = dio\nboard_upload.flash_size = 4MB\n";
+                            ftype = "bin";
+                        } else if (!bname.compare("ESP32-C3-DevKitC-02")) {
+                            pioboard = "esp32-c3-devkitc-02";
+                            pioplatform = "espressif32";
+                            if (!framework.compare("Arduino")) {
+                                pioframework = "arduino";
+                                tbreak = "setup";
+                            } else {
+                                pioframework = "espidf";
+                                tbreak = "app_main";
+                            }
+                            ledpin = "2";
+                            hwpin = "27";
+                            monitor_rst = "       monitor system_reset\n";
+                            env_extra = "board_build.flash_mode = dio\nboard_upload.flash_size = 4MB\n";
+                            ftype = "bin";
+                        } else if (!bname.compare("uCboard")) {
+                            if (!pname.compare("C51")) {
+                                pioboard = "Generic8051";
+                                pioplatform = "intel_mcs51";
+                                pioframework = "";
+                                ledpin = "P3_2";
+                                hwpin = "12";
+                                tbreak = "main";
+                            } else if (!pname.compare("STM8S103")) {
+                                pioboard = "stm8sblue";
+                                pioplatform = "ststm8";
+                                pioframework = "arduino";
+                                ledpin = "4";
+                                hwpin = "12";
+                                env_extra = "board_build.f_cpu = 4000000L\n";
+                                tbreak = "setup";
+                            }
+                            gdb_debug = 0;
                             pio_test = 0;
-                            tbreak = "main";
-                        }
-                        ledpin = "PC13";
-                        hwpin = "2";
-                        monitor_rst = "       monitor system_reset\n";
-                        ftype = "bin";
-                    } else if (!bname.compare("STM32 H103")) {
-                        pioboard = "olimex_f103";
-                        pioplatform = "ststm32";
-                        if (!framework.compare("Arduino")) {
-                            pioframework = "arduino";
-                            tbreak = "setup";
+                            ftype = "hex";
                         } else {
-                            pioframework = "cmsis";
-                            pio_test = 0;
-                            tbreak = "main";
-                        }
-                        ledpin = "PC12";
-                        hwpin = "53";
-                        monitor_rst = "       monitor system_reset\n";
-                        ftype = "bin";
-                    } else if (!bname.compare("ESP32-DevKitC")) {
-                        pioboard = "esp32dev";
-                        pioplatform = "espressif32";
-                        if (!framework.compare("Arduino")) {
-                            pioframework = "arduino";
-                            tbreak = "setup";
-                        } else {
-                            pioframework = "espidf";
-                            tbreak = "app_main";
-                        }
-                        ledpin = "2";
-                        hwpin = "24";
-                        monitor_rst = "       monitor system_reset\n";
-                        env_extra = "board_build.flash_mode = dio\nboard_upload.flash_size = 4MB\n";
-                        ftype = "bin";
-                    } else if (!bname.compare("ESP32-C3-DevKitC-02")) {
-                        pioboard = "esp32-c3-devkitc-02";
-                        pioplatform = "espressif32";
-                        if (!framework.compare("Arduino")) {
-                            pioframework = "arduino";
-                            tbreak = "setup";
-                        } else {
-                            pioframework = "espidf";
-                            tbreak = "app_main";
-                        }
-                        ledpin = "2";
-                        hwpin = "27";
-                        monitor_rst = "       monitor system_reset\n";
-                        env_extra = "board_build.flash_mode = dio\nboard_upload.flash_size = 4MB\n";
-                        ftype = "bin";
-                    } else if (!bname.compare("uCboard")) {
-                        if (!pname.compare("C51")) {
-                            pioboard = "Generic8051";
-                            pioplatform = "intel_mcs51";
-                            pioframework = "";
-                            ledpin = "P3_2";
-                            hwpin = "12";
-                            tbreak = "main";
-                        } else if (!pname.compare("STM8S103")) {
-                            pioboard = "stm8sblue";
-                            pioplatform = "ststm8";
-                            pioframework = "arduino";
-                            ledpin = "4";
-                            hwpin = "12";
-                            env_extra = "board_build.f_cpu = 4000000L\n";
-                            tbreak = "setup";
-                        }
-                        gdb_debug = 0;
-                        pio_test = 0;
-                        ftype = "hex";
-                    } else {
-                        PICSimLab.RegisterError("PICSimLab", (const char*)("Not supported board: " + bname).c_str());
-                        PICSimLab.SystemCmd(PSC_REMOVEDIR, (const char*)prjdir.utf8_str());
-                        WDestroy();
-                        return;
-                    }
-
-                    // main
-                    if (!framework.compare("Arduino")) {
-                        FILE* fmain = fopen_UTF8((prjdir + "src/main.cpp").utf8_str(), "w");
-                        if (fmain == NULL) {
-                            PICSimLab.RegisterError(
-                                "PICSimLab",
-                                (const char*)(lxString("File ") + prjdir + "src/main.cpp can't be open!").utf8_str());
+                            PICSimLab.RegisterError("PICSimLab",
+                                                    (const char*)("Not supported board: " + bname).c_str());
+                            PICSimLab.SystemCmd(PSC_REMOVEDIR, (const char*)prjdir.utf8_str());
+                            WDestroy();
                             return;
                         }
-                        fprintf(fmain, blink_code, (const char*)ledpin.c_str());
-                        fclose(fmain);
-                        if (!pname.compare("STM8S103")) {
+
+                        // main
+                        if (!framework.compare("Arduino")) {
+                            FILE* fmain = fopen_UTF8((prjdir + "src/main.cpp").utf8_str(), "w");
+                            if (fmain == NULL) {
+                                PICSimLab.RegisterError("PICSimLab", (const char*)(lxString("File ") + prjdir +
+                                                                                   "src/main.cpp can't be open!")
+                                                                         .utf8_str());
+                                return;
+                            }
+                            fprintf(fmain, blink_code, (const char*)ledpin.c_str());
+                            fclose(fmain);
+                            if (!pname.compare("STM8S103")) {
+                                PICSimLab.SystemCmd(PSC_RENAMEFILE, (const char*)(prjdir + "src/main.cpp").utf8_str(),
+                                                    (void*)((const char*)(prjdir + "src/main.c").utf8_str()));
+                                PICSimLab.SystemCmd(PSC_REMOVEFILE,
+                                                    (const char*)(prjdir + "test/test_main.cpp").utf8_str());
+                            }
+                        } else if (!framework.compare("IDF")) {
+                            PICSimLab.SystemCmd(PSC_RENAMEFILE, (prjdir + (const char*)"test/test_main.cpp").utf8_str(),
+                                                (void*)((const char*)(prjdir + "test/test_main.c").utf8_str()));
                             PICSimLab.SystemCmd(PSC_RENAMEFILE, (const char*)(prjdir + "src/main.cpp").utf8_str(),
                                                 (void*)((const char*)(prjdir + "src/main.c").utf8_str()));
+                            FILE* fmain = fopen_UTF8((prjdir + "src/main.c").utf8_str(), "w");
+                            if (fmain == NULL) {
+                                PICSimLab.RegisterError(
+                                    "PICSimLab",
+                                    (const char*)(lxString("File ") + prjdir + "src/main.c can't be open!").utf8_str());
+                                return;
+                            }
+                            fprintf(fmain, blink_idf_code, (const char*)ledpin.c_str());
+                            fclose(fmain);
+
+                            FILE* fsdkcfg = fopen_UTF8((prjdir + "sdkconfig.defaults").utf8_str(), "w");
+                            if (fsdkcfg == NULL) {
+                                PICSimLab.RegisterError("PICSimLab", (const char*)(lxString("File ") + prjdir +
+                                                                                   "sdkconfig.defaults can't be open!")
+                                                                         .utf8_str());
+                                return;
+                            }
+                            fprintf(fsdkcfg, "CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y\n");
+                            fclose(fsdkcfg);
+                        } else if (!framework.compare("CMSIS")) {
+                            PICSimLab.SystemCmd(PSC_RENAMEFILE, (const char*)(prjdir + "src/main.cpp").utf8_str(),
+                                                (void*)((const char*)(prjdir + "src/main.c").utf8_str()));
+                            FILE* fmain = fopen_UTF8((prjdir + "src/main.c").utf8_str(), "w");
+                            if (fmain == NULL) {
+                                PICSimLab.RegisterError(
+                                    "PICSimLab",
+                                    (const char*)(lxString("File ") + prjdir + "src/main.c can't be open!").utf8_str());
+                                return;
+                            }
+                            fprintf(fmain, blink_cmsis_code, (const char*)ledpin.c_str());
+                            fclose(fmain);
+
+                            PICSimLab.SystemCmd(PSC_REMOVEFILE,
+                                                (const char*)(prjdir + "test/test_main.cpp").utf8_str());
+                        } else if (!framework.compare("None")) {
+                            PICSimLab.SystemCmd(PSC_RENAMEFILE, (const char*)(prjdir + "src/main.cpp").utf8_str(),
+                                                (void*)((const char*)(prjdir + "src/main.c").utf8_str()));
+                            FILE* fmain = fopen_UTF8((prjdir + "src/main.c").utf8_str(), "w");
+                            if (fmain == NULL) {
+                                PICSimLab.RegisterError(
+                                    "PICSimLab",
+                                    (const char*)(lxString("File ") + prjdir + "src/main.c can't be open!").utf8_str());
+                                return;
+                            }
+                            fprintf(fmain, blink_c51_code, (const char*)ledpin.c_str());
+                            fclose(fmain);
+
                             PICSimLab.SystemCmd(PSC_REMOVEFILE,
                                                 (const char*)(prjdir + "test/test_main.cpp").utf8_str());
                         }
-                    } else if (!framework.compare("IDF")) {
-                        PICSimLab.SystemCmd(PSC_RENAMEFILE, (prjdir + (const char*)"test/test_main.cpp").utf8_str(),
-                                            (void*)((const char*)(prjdir + "test/test_main.c").utf8_str()));
-                        PICSimLab.SystemCmd(PSC_RENAMEFILE, (const char*)(prjdir + "src/main.cpp").utf8_str(),
-                                            (void*)((const char*)(prjdir + "src/main.c").utf8_str()));
-                        FILE* fmain = fopen_UTF8((prjdir + "src/main.c").utf8_str(), "w");
+
+                        // platformio.ini
+                        FILE* fpio = fopen_UTF8((prjdir + "platformio.ini").utf8_str(), "w");
+                        if (fpio == NULL) {
+                            PICSimLab.RegisterError(
+                                "PICSimLab",
+                                (const char*)(lxString("File ") + prjdir + "platformio.ini can't be open!").utf8_str());
+                            return;
+                        }
+                        fprintf(fpio, platformio_ini, (const char*)pioboard.c_str(), (const char*)pioplatform.c_str(),
+                                (const char*)pioboard.c_str(), (const char*)pioframework.c_str(),
+                                (const char*)env_extra.c_str(), (const char*)pioboard.c_str(),
+                                (const char*)ftype.c_str());
+                        if (gdb_debug) {
+                            fprintf(fpio, platformio_ini_dbg, (const char*)tbreak.c_str(),
+                                    (const char*)monitor_rst.c_str(), (const char*)monitor_rst.c_str());
+                        } else {
+                            fprintf(fpio, "debug_tool = custom  #no debug support\n");
+                        }
+
+                        fclose(fpio);
+
+                        // test
+                        if (pio_test) {
+                            FILE* ftest = fopen_UTF8((prjdir + "test/test_custom_runner.py").utf8_str(), "w");
+                            if (ftest == NULL) {
+                                PICSimLab.RegisterError("PICSimLab",
+                                                        (const char*)(lxString("File ") + prjdir +
+                                                                      "test/test_custom_runner.py can't be open!")
+                                                            .utf8_str());
+                                return;
+                            }
+                            fprintf(ftest, blink_test, (const char*)hwpin.c_str());
+                            fclose(ftest);
+                        } else {
+                            PICSimLab.SystemCmd(PSC_REMOVEFILE,
+                                                (const char*)(prjdir + "test/test_custom_runner.py").utf8_str());
+                        }
+
+                        PICSimLab.GetBoard()->SetPWActiveProject((const char*)prjdir.utf8_str());
+                        PICSimLab.GetBoard()->SetPWProjectType((const char*)ide.c_str());
+                        Window1.menu1_Code_Open_Active_Project.SetEnable(1);
+
+                        if (operation == OP_CREATE_AND_OPEN) {
+                            OpenProject(prjdir, ide);
+                        }
+                    } else if (!ide.compare("MPLAB X IDE")) {
+                        lxString fzip = PICSimLab.GetSharePath() + "prj_wizard/mplabx.zip";
+                        PICSimLab.SystemCmd(PSC_UNZIPDIR, fzip.utf8_str(), (void*)((const char*)prjdir.utf8_str()));
+
+                        char prj_name[512];
+
+                        if (strlen(strrchr(prjdir.utf8_str(), '/')) > 2) {
+                            strncpy(prj_name, strrchr(prjdir.utf8_str(), '/'), 511);
+                        } else {
+                            char stmp[512];
+                            strncpy(stmp, prjdir.utf8_str(), 512);
+                            stmp[strlen(stmp) - 1] = 0;
+                            strncpy(prj_name, strrchr(stmp, '/') + 1, 511);
+                        }
+
+                        // main
+                        FILE* fmain = fopen_UTF8((prjdir + "main.c").utf8_str(), "w");
                         if (fmain == NULL) {
                             PICSimLab.RegisterError(
                                 "PICSimLab",
-                                (const char*)(lxString("File ") + prjdir + "src/main.c can't be open!").utf8_str());
+                                (const char*)(lxString("File ") + prjdir + "main.c can't be open!").utf8_str());
                             return;
                         }
-                        fprintf(fmain, blink_idf_code, (const char*)ledpin.c_str());
+                        fprintf(fmain, blink_mplabx);
                         fclose(fmain);
 
-                        FILE* fsdkcfg = fopen_UTF8((prjdir + "sdkconfig.defaults").utf8_str(), "w");
-                        if (fsdkcfg == NULL) {
+                        // project
+                        FILE* fproj = fopen_UTF8((prjdir + "nbproject/project.xml").utf8_str(), "w");
+                        if (fproj == NULL) {
                             PICSimLab.RegisterError("PICSimLab", (const char*)(lxString("File ") + prjdir +
-                                                                               "sdkconfig.defaults can't be open!")
+                                                                               "nbproject/project.xml can't be open!")
                                                                      .utf8_str());
                             return;
                         }
-                        fprintf(fsdkcfg, "CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y\n");
-                        fclose(fsdkcfg);
-                    } else if (!framework.compare("CMSIS")) {
-                        PICSimLab.SystemCmd(PSC_RENAMEFILE, (const char*)(prjdir + "src/main.cpp").utf8_str(),
-                                            (void*)((const char*)(prjdir + "src/main.c").utf8_str()));
-                        FILE* fmain = fopen_UTF8((prjdir + "src/main.c").utf8_str(), "w");
-                        if (fmain == NULL) {
-                            PICSimLab.RegisterError(
-                                "PICSimLab",
-                                (const char*)(lxString("File ") + prjdir + "src/main.c can't be open!").utf8_str());
+                        fprintf(fproj, project_xml, prj_name, time(NULL));
+                        fclose(fproj);
+
+                        // configurations
+                        FILE* fconf = fopen_UTF8((prjdir + "nbproject/configurations.xml").utf8_str(), "w");
+                        if (fconf == NULL) {
+                            PICSimLab.RegisterError("PICSimLab",
+                                                    (const char*)(lxString("File ") + prjdir +
+                                                                  "nbproject/configurations.xml can't be open!")
+                                                        .utf8_str());
                             return;
                         }
-                        fprintf(fmain, blink_cmsis_code, (const char*)ledpin.c_str());
-                        fclose(fmain);
+                        fprintf(fconf, configurations_xml, (const char*)pname.c_str());
+                        fclose(fconf);
 
-                        PICSimLab.SystemCmd(PSC_REMOVEFILE, (const char*)(prjdir + "test/test_main.cpp").utf8_str());
-                    } else if (!framework.compare("None")) {
-                        PICSimLab.SystemCmd(PSC_RENAMEFILE, (const char*)(prjdir + "src/main.cpp").utf8_str(),
-                                            (void*)((const char*)(prjdir + "src/main.c").utf8_str()));
-                        FILE* fmain = fopen_UTF8((prjdir + "src/main.c").utf8_str(), "w");
-                        if (fmain == NULL) {
-                            PICSimLab.RegisterError(
-                                "PICSimLab",
-                                (const char*)(lxString("File ") + prjdir + "src/main.c can't be open!").utf8_str());
-                            return;
+                        PICSimLab.GetBoard()->SetPWActiveProject((const char*)prjdir.utf8_str());
+                        PICSimLab.GetBoard()->SetPWProjectType((const char*)ide.c_str());
+                        Window1.menu1_Code_Open_Active_Project.SetEnable(1);
+
+                        if (operation == OP_CREATE_AND_OPEN) {
+                            OpenProject(prjdir, ide);
                         }
-                        fprintf(fmain, blink_c51_code, (const char*)ledpin.c_str());
-                        fclose(fmain);
 
-                        PICSimLab.SystemCmd(PSC_REMOVEFILE, (const char*)(prjdir + "test/test_main.cpp").utf8_str());
-                    }
-
-                    // platformio.ini
-                    FILE* fpio = fopen_UTF8((prjdir + "platformio.ini").utf8_str(), "w");
-                    if (fpio == NULL) {
+                    } else {
                         PICSimLab.RegisterError(
                             "PICSimLab",
-                            (const char*)(lxString("File ") + prjdir + "platformio.ini can't be open!").utf8_str());
+                            (const char*)(lxString("IDE of type [") + ide + "] not supported!").utf8_str());
+                        WDestroy();
                         return;
-                    }
-                    fprintf(fpio, platformio_ini, (const char*)pioboard.c_str(), (const char*)pioplatform.c_str(),
-                            (const char*)pioboard.c_str(), (const char*)pioframework.c_str(),
-                            (const char*)env_extra.c_str(), (const char*)pioboard.c_str(), (const char*)ftype.c_str());
-                    if (gdb_debug) {
-                        fprintf(fpio, platformio_ini_dbg, (const char*)tbreak.c_str(), (const char*)monitor_rst.c_str(),
-                                (const char*)monitor_rst.c_str());
-                    } else {
-                        fprintf(fpio, "debug_tool = custom  #no debug support\n");
-                    }
-
-                    fclose(fpio);
-
-                    PICSimLab.GetBoard()->SetPWActiveProject((const char*)prjdir.utf8_str());
-                    PICSimLab.GetBoard()->SetPWProjectType((const char*)ide.c_str());
-                    Window1.menu1_Code_Open_Active_Project.SetEnable(1);
-
-                    // test
-                    if (pio_test) {
-                        FILE* ftest = fopen_UTF8((prjdir + "test/test_custom_runner.py").utf8_str(), "w");
-                        if (ftest == NULL) {
-                            PICSimLab.RegisterError(
-                                "PICSimLab",
-                                (const char*)(lxString("File ") + prjdir + "test/test_custom_runner.py can't be open!")
-                                    .utf8_str());
-                            return;
-                        }
-                        fprintf(ftest, blink_test, (const char*)hwpin.c_str());
-                        fclose(ftest);
-                    } else {
-                        PICSimLab.SystemCmd(PSC_REMOVEFILE,
-                                            (const char*)(prjdir + "test/test_custom_runner.py").utf8_str());
-                    }
-
-                    if (operation == OP_CREATE_AND_OPEN) {
-                        OpenProject(prjdir, ide);
                     }
                 } else {
                     PICSimLab.RegisterError(
@@ -515,6 +589,53 @@ int CPWindow6::OpenProject(lxString path, lxString type) {
 
         printf("PICSimLab: Open project [%s]\n", (const char*)(lxString(vscode_path) + " \"" + path + "\"").utf8_str());
         lxExecute((lxString(vscode_path) + " \"" + path + "\""));
+
+        return 0;
+    } else if (!type.compare("MPLAB X IDE")) {
+        char mplabx_path[1024];
+
+        if (!PICSimLab.SystemCmd(PSC_DIREXISTS, path.utf8_str())) {
+            PICSimLab.RegisterError("PICSimLab", (const char*)("Project dir not found!\n" + path).utf8_str());
+            PICSimLab.GetBoard()->SetPWActiveProject(" ");
+            Window1.menu1_Code_Open_Active_Project.SetEnable(0);
+            return 1;
+        }
+
+        strncpy(mplabx_path, PICSimLab.GetPWMplabxPath().c_str(), 1023);
+
+        if (!PICSimLab.SystemCmd(PSC_FILEEXISTS, mplabx_path)) {
+#ifdef _WIN_
+
+            if (PICSimLab.SystemCmd(PSC_FILEEXISTS,
+                                    "C:/Program Files/Microchip/MPLABX/v6.20/mplab_platform/bin/mplab_ide.exe")) {
+                strncpy(mplabx_path, "C:/Program Files/Microchip/MPLABX/v6.20/mplab_platform/bin/mplab_ide.exe", 1023);
+            } else {
+                if (Dialog_sz("MPLAB X IDE executable not found!\n Search on disk?", 400, 200)) {
+                    filedialog1.SetFileName(mplabx_path);
+                    filedialog1.SetFilter(lxT("All Files (*.exe)|*.exe"));
+                    filedialog1.Run();
+                }
+                return 1;
+            }
+#else
+            if (PICSimLab.SystemCmd(PSC_FILEEXISTS, "/opt/microchip/mplabx/v6.20/mplab_platform/bin/mplab_ide")) {
+                strncpy(mplabx_path, "/opt/microchip/mplabx/v6.20/mplab_platform/bin/mplab_ide", 1023);
+            } else {
+                if (Dialog_sz("MPLAB X IDE executable not found!\n Search on disk?", 400, 200)) {
+                    filedialog1.SetFileName(mplabx_path);
+                    filedialog1.SetFilter(lxT("All Files (*)|*"));
+                    filedialog1.Run();
+                }
+                return 1;
+            }
+
+#endif
+            PICSimLab.SetPWVscodePath(mplabx_path);
+        }
+
+        printf("PICSimLab: Open project [%s]\n",
+               (const char*)(lxString(mplabx_path) + " --open \"" + path + "\"").utf8_str());
+        lxExecute((lxString(mplabx_path) + " --open \"" + path + "\""));
 
         return 0;
     } else {

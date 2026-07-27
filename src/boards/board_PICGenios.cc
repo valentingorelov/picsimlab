@@ -2405,20 +2405,13 @@ void cboard_PICGenios::RefreshStatus(void) {
 
 void cboard_PICGenios::WritePreferences(void) {
     char line[128];
-    PICSimLab.SavePrefs(
-        "PICGenios_"
-        "proc",
-        Proc);
+    PICSimLab.SavePrefs("PICGenios_proc", Proc);
 
     PICSimLab.SavePrefs("PICGenios_jmp", std::to_string(jmp[0]));
 
     PICSimLab.UpdateGUI(LCD_TYPE, GT_COMBO, GA_GET, (void*)line);
     if (line[0]) {
-        PICSimLab.SavePrefs(
-            "PICGen"
-            "ios_"
-            "lcd",
-            line);
+        PICSimLab.SavePrefs("PICGenios_lcd", line);
     }
 
     line[0] = 0;
@@ -2426,33 +2419,23 @@ void cboard_PICGenios::WritePreferences(void) {
         sprintf(line + i, "%i", dip[i]);
 
     PICSimLab.SavePrefs("PICGenios_dip", line);
-    PICSimLab.SavePrefs(
-        "PICGenios_"
-        "clock",
-        FloatStrFormat("%2.1f", PICSimLab.GetClock()));
+    PICSimLab.SavePrefs("PICGenios_clock", FloatStrFormat("%2.1f", PICSimLab.GetClock()));
 
-    PICSimLab.SavePrefs(
-        "PICGenios_"
-        "pot1",
-        std::to_string(pot[0]));
-    PICSimLab.SavePrefs(
-        "PICGenios_"
-        "pot2",
-        std::to_string(pot[1]));
+    PICSimLab.SavePrefs("PICGenios_pot1", std::to_string(pot[0]));
+    PICSimLab.SavePrefs("PICGenios_pot2", std::to_string(pot[1]));
+
+    PICSimLab.SavePrefs("PICGenios_PWActivePrj", GetPWActiveProject());
+    PICSimLab.SavePrefs("PICGenios_PWPrjType", GetPWProjectType());
 }
 
 void cboard_PICGenios::ReadPreferences(char* name, char* value) {
     int i;
 
-    if (!strcmp(name,
-                "PICGenios_"
-                "proc")) {
+    if (!strcmp(name, "PICGenios_proc")) {
         Proc = value;
     }
 
-    if (!strcmp(name,
-                "PICGenios_"
-                "jmp")) {
+    if (!strcmp(name, "PICGenios_jmp")) {
         for (i = 0; i < 1; i++) {
             if (value[i] == '0')
                 jmp[i] = 0;
@@ -2461,9 +2444,7 @@ void cboard_PICGenios::ReadPreferences(char* name, char* value) {
         }
     }
 
-    if (!strcmp(name,
-                "PICGenios_"
-                "dip")) {
+    if (!strcmp(name, "PICGenios_dip")) {
         for (i = 0; i < 20; i++) {
             if (value[i] == '0')
                 dip[i] = 0;
@@ -2472,16 +2453,10 @@ void cboard_PICGenios::ReadPreferences(char* name, char* value) {
         }
     }
 
-    if (!strcmp(name,
-                "PICGenios_"
-                "lcd")) {
+    if (!strcmp(name, "PICGenios_cd")) {
         PICSimLab.UpdateGUI(LCD_TYPE, GT_COMBO, GA_SET, (void*)value);
 
-        if (!strcmp(value,
-                    "hd4478"
-                    "0 "
-                    "16x"
-                    "2")) {
+        if (!strcmp(value, "hd44780 16x2")) {
             lcd_end(&lcd);
             lcd_init(&lcd, 16, 2, this);
         } else {
@@ -2490,22 +2465,24 @@ void cboard_PICGenios::ReadPreferences(char* name, char* value) {
         }
     }
 
-    if (!strcmp(name,
-                "PICGenios_"
-                "clock")) {
+    if (!strcmp(name, "PICGenios_clock")) {
         PICSimLab.SetClock(atof(value));
     }
 
-    if (!strcmp(name,
-                "PICGenios_"
-                "pot1")) {
+    if (!strcmp(name, "PICGenios_pot1")) {
         pot[0] = atoi(value);
     }
 
-    if (!strcmp(name,
-                "PICGenios_"
-                "pot2")) {
+    if (!strcmp(name, "PICGenios_pot2")) {
         pot[1] = atoi(value);
+    }
+
+    if (!strcmp(name, "PICGenios_PWActivePrj")) {
+        SetPWActiveProject(value);
+    }
+
+    if (!strcmp(name, "PICGenios_PWPrjType")) {
+        SetPWProjectType(value);
     }
 }
 

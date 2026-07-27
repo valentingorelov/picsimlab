@@ -83,6 +83,7 @@ CPICSimLab::CPICSimLab() {
     lastpzwtmpdir[0] = 0;
     check_for_devel = 0;
     pw_vscode_path = " ";
+    pw_mplabx_path = " ";
 
     OnUpdateStatus = NULL;
     OnConfigure = NULL;
@@ -375,6 +376,7 @@ void CPICSimLab::EndSimulation(int saveold, const char* newpath) {
     SavePrefs("picsimlab_lfile", FNAME);
 
     SavePrefs("picsimlab_pw_vscodep", pw_vscode_path);
+    SavePrefs("picsimlab_pw_mplabxp", pw_mplabx_path);
 
     if ((Workspacefn.length() > 0) && GetNeedReboot() && (saveold == 2)) {
         SavePrefs("picsimlab_lwsfn", Workspacefn);
@@ -800,7 +802,28 @@ void CPICSimLab::SaveWorkspace(std::string fnpzw) {
             SystemCmd(PSC_REMOVEDIR, fname);
             sprintf(fname, "%s/code/%s/test/__pycache__", home, code_dst);
             SystemCmd(PSC_REMOVEDIR, fname);
+
             sprintf(fname, "%s/code/%s/sdkconfig.PICSimLab", home, code_dst);
+            SystemCmd(PSC_REMOVEFILE, fname);
+        } else if (!pboard->GetPWProjectType().compare("MPLAB X IDE")) {
+            sprintf(fname, "%s/code/%s/dist/", home, code_dst);
+            SystemCmd(PSC_REMOVEDIR, fname);
+            sprintf(fname, "%s/code/%s/build/", home, code_dst);
+            SystemCmd(PSC_REMOVEDIR, fname);
+            sprintf(fname, "%s/code/%s/debug/", home, code_dst);
+            SystemCmd(PSC_REMOVEDIR, fname);
+            sprintf(fname, "%s/code/%s/nbproject/private/", home, code_dst);
+            SystemCmd(PSC_REMOVEDIR, fname);
+
+            sprintf(fname, "%s/code/%s/nbproject/Makefile-variables.mk", home, code_dst);
+            SystemCmd(PSC_REMOVEFILE, fname);
+            sprintf(fname, "%s/code/%s/nbproject/Makefile-local-default.mk", home, code_dst);
+            SystemCmd(PSC_REMOVEFILE, fname);
+            sprintf(fname, "%s/code/%s/nbproject/Makefile-impl.mk", home, code_dst);
+            SystemCmd(PSC_REMOVEFILE, fname);
+            sprintf(fname, "%s/code/%s/nbproject/Makefile-genesis.properties", home, code_dst);
+            SystemCmd(PSC_REMOVEFILE, fname);
+            sprintf(fname, "%s/code/%s/nbproject/Makefile-default.mk", home, code_dst);
             SystemCmd(PSC_REMOVEFILE, fname);
         }
     }
@@ -1043,6 +1066,10 @@ void CPICSimLab::Configure(const char* home, int use_default_board, int create, 
 
                 if (!strcmp(name, "picsimlab_pw_vscodep")) {
                     SetPWVscodePath(std::string(value));
+                }
+
+                if (!strcmp(name, "picsimlab_pw_mplabxp")) {
+                    SetPWMplabxPath(std::string(value));
                 }
 
                 if (!strcmp(name, "picsimlab_lwsfn")) {

@@ -69,6 +69,9 @@ public:
     std::string GetPWVscodePath(void) { return pw_vscode_path; };
     void SetPWVscodePath(std::string path) { pw_vscode_path = path; };
 
+    std::string GetPWMplabxPath(void) { return pw_mplabx_path; };
+    void SetPWMplabxPath(std::string path) { pw_mplabx_path = path; };
+
     std::string GetProcessorName(void) { return proc_; };
     void SetProcessorName(std::string pn) { proc_ = pn; };
 
@@ -346,6 +349,7 @@ private:
     char lastpzwtmpdir[1024];
     int check_for_devel;
     std::string pw_vscode_path;
+    std::string pw_mplabx_path;
 };
 
 extern CPICSimLab PICSimLab;

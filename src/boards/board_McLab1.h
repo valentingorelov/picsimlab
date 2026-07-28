@@ -50,6 +50,8 @@ public:
     void Draw(void) override;
     void Run_CPU(void) override;
     std::string GetSupportedDevices(void) override { return "PIC16F628A,PIC16F648A,PIC16F84A,"; };
+    // Return a list of supported IDEs in project wizard
+    std::string GetSupportedIDEs(void) override { return "MPLAB X IDE,"; };
     void Reset(void) override;
     void EvMouseButtonPress(unsigned int button, unsigned int x, unsigned int y, unsigned int state) override;
     void EvMouseButtonRelease(unsigned int button, unsigned int x, unsigned int y, unsigned int state) override;

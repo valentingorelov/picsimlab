@@ -2420,10 +2420,8 @@ void cboard_PICGenios::WritePreferences(void) {
 
     PICSimLab.SavePrefs("PICGenios_dip", line);
     PICSimLab.SavePrefs("PICGenios_clock", FloatStrFormat("%2.1f", PICSimLab.GetClock()));
-
     PICSimLab.SavePrefs("PICGenios_pot1", std::to_string(pot[0]));
     PICSimLab.SavePrefs("PICGenios_pot2", std::to_string(pot[1]));
-
     PICSimLab.SavePrefs("PICGenios_PWActivePrj", GetPWActiveProject());
     PICSimLab.SavePrefs("PICGenios_PWPrjType", GetPWProjectType());
 }

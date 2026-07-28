@@ -272,7 +272,7 @@ void cpart_TEXT::ReadPropertiesWindow(void) {
 
     Size = size;
 
-    char buff[64];
+    char buff[512];
     SpareParts.WPropCmd("combo3", PWA_COMBOGETTEXT, NULL, buff);
 
     std::string val = buff;

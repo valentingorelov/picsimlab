@@ -919,6 +919,8 @@ void cboard_McLab1::WritePreferences(void) {
     PICSimLab.SavePrefs("McLab1_proc", Proc);
     PICSimLab.SavePrefs("McLab1_jmp", std::to_string(jmp[0]));
     PICSimLab.SavePrefs("McLab1_clock", FloatStrFormat("%2.1f", PICSimLab.GetClock()));
+    PICSimLab.SavePrefs("McLab1_PWActivePrj", GetPWActiveProject());
+    PICSimLab.SavePrefs("McLab1_PWPrjType", GetPWProjectType());
 }
 
 void cboard_McLab1::ReadPreferences(char* name, char* value) {
@@ -939,6 +941,14 @@ void cboard_McLab1::ReadPreferences(char* name, char* value) {
 
     if (!strcmp(name, "McLab1_clock")) {
         PICSimLab.SetClock(atof(value));
+    }
+
+    if (!strcmp(name, "McLab1_PWActivePrj")) {
+        SetPWActiveProject(value);
+    }
+
+    if (!strcmp(name, "McLab1_PWPrjType")) {
+        SetPWProjectType(value);
     }
 }
 

@@ -93,6 +93,8 @@ public:
         return "PIC16F1789,PIC16F1939,PIC16F777,PIC16F877A,PIC16F887,PIC18F452,PIC18F4520,PIC18F4550,PIC18F45K50,"
                "PIC18F4580,PIC18F4620,PIC18F47K40,";
     };
+    // Return a list of supported IDEs in project wizard
+    std::string GetSupportedIDEs(void) override { return "MPLAB X IDE,"; };
     int MInit(const char* processor, const char* fname, float freq) override;
     void Reset(void) override;
     int MDumpMemory(const char* mfname) override;

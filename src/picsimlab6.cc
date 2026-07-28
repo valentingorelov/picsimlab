@@ -72,7 +72,11 @@ void CPWindow6::button1_EvMouseButtonClick(CControl* control, const uint button,
 void CPWindow6::button2_EvMouseButtonClick(CControl* control, const uint button, const uint x, const uint y,
                                            const uint state) {
     dirdialog1.SetType(lxFD_SAVE | lxFD_CHANGE_DIR);
-    dirdialog1.SetDirName(lxGetDocumentsDir("picsimlab") + "/PlatformIO/Projects/");
+    if (!ide.compare("PlatformIO IDE for VSCode")) {
+        dirdialog1.SetDirName(lxGetDocumentsDir("picsimlab") + "/PlatformIO/Projects/");
+    } else if (!ide.compare("MPLAB X IDE")) {
+        dirdialog1.SetDirName(lxGetHomeDir() + "/MPLABXProjects/");
+    }
     operation = OP_CREATE_AND_OPEN;
     dirdialog1.Run();
 }
@@ -85,7 +89,11 @@ void CPWindow6::button3_EvMouseButtonClick(CControl* control, const uint button,
 void CPWindow6::button4_EvMouseButtonClick(CControl* control, const uint button, const uint x, const uint y,
                                            const uint state) {
     operation = OP_OPEN_EXISTING;
-    dirdialog1.SetDirName(lxGetDocumentsDir("picsimlab") + "/PlatformIO/Projects/");
+    if (!ide.compare("PlatformIO IDE for VSCode")) {
+        dirdialog1.SetDirName(lxGetDocumentsDir("picsimlab") + "/PlatformIO/Projects/");
+    } else if (!ide.compare("MPLAB X IDE")) {
+        dirdialog1.SetDirName(lxGetHomeDir() + "/MPLABXProjects/");
+    }
     dirdialog1.Run();
 }
 
@@ -457,6 +465,58 @@ void CPWindow6::dirdialog1_EvOnClose(int retId) {
                             strncpy(prj_name, strrchr(stmp, '/') + 1, 511);
                         }
 
+                        // board selection
+                        lxString mplabx_cfg = "";
+                        lxString mplabx_freq = "";
+                        lxString mplabx_tris = "";
+                        lxString mplabx_pin = "";
+                        if (!bname.compare("PICGenios")) {
+                            if (strstr(pname.c_str(), "PIC18F")) {
+                                if (!pname.compare("PIC18F45K50")) {
+                                    mplabx_cfg = "#pragma config WDTEN = OFF";
+                                } else if (!pname.compare("PIC18F47K40")) {
+                                    mplabx_cfg = "#pragma config WDTE = OFF";
+                                } else {
+                                    mplabx_cfg = "#pragma config WDT = OFF";
+                                }
+                                mplabx_tris = "TRISDbits.TRISD0";
+                                mplabx_pin = "LATDbits.LD0";
+                            } else {
+                                mplabx_cfg = "#pragma config WDTE = OFF";
+                                mplabx_tris = "TRISDbits.TRISD0";
+                                mplabx_pin = "PORTDbits.RD0";
+                            }
+                            mplabx_freq = "8000000L";
+                        } else if (!bname.compare("McLab2")) {
+                            if (strstr(pname.c_str(), "PIC18F")) {
+                                if (!pname.compare("PIC18F45K50")) {
+                                    mplabx_cfg = "#pragma config WDTEN = OFF";
+                                } else if (!pname.compare("PIC18F47K40")) {
+                                    mplabx_cfg = "#pragma config WDTE = OFF";
+                                } else {
+                                    mplabx_cfg = "#pragma config WDT = OFF";
+                                }
+                                mplabx_tris = "TRISBbits.TRISB3";
+                                mplabx_pin = "LATBbits.LB3";
+                            } else {
+                                mplabx_cfg = "#pragma config WDTE = OFF";
+                                mplabx_tris = "TRISBbits.TRISB3";
+                                mplabx_pin = "PORTBbits.RB3";
+                            }
+                            mplabx_freq = "8000000L";
+                        } else if (!bname.compare("McLab1")) {
+                            mplabx_cfg = "#pragma config WDTE = OFF";
+                            mplabx_tris = "TRISBbits.TRISB0";
+                            mplabx_pin = "PORTBbits.RB0";
+                            mplabx_freq = "4000000L";
+                        } else {
+                            PICSimLab.RegisterError("PICSimLab",
+                                                    (const char*)("Not supported board: " + bname).c_str());
+                            PICSimLab.SystemCmd(PSC_REMOVEDIR, (const char*)prjdir.utf8_str());
+                            WDestroy();
+                            return;
+                        }
+
                         // main
                         FILE* fmain = fopen_UTF8((prjdir + "main.c").utf8_str(), "w");
                         if (fmain == NULL) {
@@ -465,7 +525,9 @@ void CPWindow6::dirdialog1_EvOnClose(int retId) {
                                 (const char*)(lxString("File ") + prjdir + "main.c can't be open!").utf8_str());
                             return;
                         }
-                        fprintf(fmain, blink_mplabx);
+                        fprintf(fmain, blink_mplabx, (const char*)mplabx_cfg.c_str(), (const char*)mplabx_freq.c_str(),
+                                (const char*)mplabx_tris.c_str(), (const char*)mplabx_pin.c_str(),
+                                (const char*)mplabx_pin.c_str());
                         fclose(fmain);
 
                         // project
@@ -526,7 +588,15 @@ void CPWindow6::dirdialog1_EvOnClose(int retId) {
 
 void CPWindow6::filedialog1_EvOnClose(const int retId) {
     if (retId) {
-        PICSimLab.SetPWVscodePath((const char*)filedialog1.GetFileName().utf8_str());
+        lxString type = PICSimLab.GetBoard()->GetPWProjectType();
+        if (!type.compare("PlatformIO IDE for VSCode")) {
+            PICSimLab.SetPWVscodePath((const char*)filedialog1.GetFileName().utf8_str());
+        } else if (!type.compare("MPLAB X IDE")) {
+            PICSimLab.SetPWMplabxPath((const char*)filedialog1.GetFileName().utf8_str());
+        } else {
+            PICSimLab.RegisterError("PICSimLab", "IDE type not supported!");
+            return;
+        }
         OpenProject(PICSimLab.GetBoard()->GetPWActiveProject(), PICSimLab.GetBoard()->GetPWProjectType());
     }
 }
@@ -605,13 +675,13 @@ int CPWindow6::OpenProject(lxString path, lxString type) {
 
         if (!PICSimLab.SystemCmd(PSC_FILEEXISTS, mplabx_path)) {
 #ifdef _WIN_
-
             if (PICSimLab.SystemCmd(PSC_FILEEXISTS,
-                                    "C:/Program Files/Microchip/MPLABX/v6.20/mplab_platform/bin/mplab_ide.exe")) {
-                strncpy(mplabx_path, "C:/Program Files/Microchip/MPLABX/v6.20/mplab_platform/bin/mplab_ide.exe", 1023);
+                                    "C:/Program Files/Microchip/MPLABX/v6.20/mplab_platform/bin/mplab_ide64.exe")) {
+                strncpy(mplabx_path, "C:/Program Files/Microchip/MPLABX/v6.20/mplab_platform/bin/mplab_ide64.exe",
+                        1023);
             } else {
                 if (Dialog_sz("MPLAB X IDE executable not found!\n Search on disk?", 400, 200)) {
-                    filedialog1.SetFileName(mplabx_path);
+                    filedialog1.SetDir("C:/Program Files/Microchip/MPLABX/");
                     filedialog1.SetFilter(lxT("All Files (*.exe)|*.exe"));
                     filedialog1.Run();
                 }
@@ -622,7 +692,7 @@ int CPWindow6::OpenProject(lxString path, lxString type) {
                 strncpy(mplabx_path, "/opt/microchip/mplabx/v6.20/mplab_platform/bin/mplab_ide", 1023);
             } else {
                 if (Dialog_sz("MPLAB X IDE executable not found!\n Search on disk?", 400, 200)) {
-                    filedialog1.SetFileName(mplabx_path);
+                    filedialog1.SetDir("/opt/microchip/mplabx/");
                     filedialog1.SetFilter(lxT("All Files (*)|*"));
                     filedialog1.Run();
                 }
@@ -630,7 +700,7 @@ int CPWindow6::OpenProject(lxString path, lxString type) {
             }
 
 #endif
-            PICSimLab.SetPWVscodePath(mplabx_path);
+            PICSimLab.SetPWMplabxPath(mplabx_path);
         }
 
         printf("PICSimLab: Open project [%s]\n",

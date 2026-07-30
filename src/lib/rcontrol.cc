@@ -42,6 +42,7 @@
 #include <sys/types.h>
 #include <sys/un.h>
 #include <sys/unistd.h>
+#define closesocket(X) close(X)
 #else
 #include <winsock2.h>
 #ifndef MSG_WAITALL
@@ -223,7 +224,7 @@ void rcontrol_stop(const int client_id) {
         dprint("rcontrol: Client disconnected [%i]!---------------------------------\n", client_id);
         if (clients[client_id].sockfd >= 0) {
             shutdown(clients[client_id].sockfd, SHUT_RDWR);
-            close(clients[client_id].sockfd);
+            closesocket(clients[client_id].sockfd);
         }
         clients[client_id].sockfd = -1;
     }
@@ -248,7 +249,7 @@ void rcontrol_server_end(void) {
         server_started = 0;
         dprint("rcontrol: server end\n");
         shutdown(listenfd, SHUT_RDWR);
-        close(listenfd);
+        closesocket(listenfd);
         listenfd = -1;
     }
 }

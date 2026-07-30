@@ -471,6 +471,17 @@ int bsim_simavr::MInit(const char* processor, const char* fname, float freq) {
 
 void bsim_simavr::MEnd(void) {
     if (avr_debug_type) {
+#ifdef _WIN_
+        if (avr->gdb) {
+            if (avr->gdb->listen != -1)
+                closesocket(avr->gdb->listen);
+            avr->gdb->listen = -1;
+
+            if (avr->gdb->s != -1)
+                closesocket(avr->gdb->s);
+            avr->gdb->s = -1;
+        }
+#endif
         avr_deinit_gdb(avr);
     } else {
         mplabxd_end();

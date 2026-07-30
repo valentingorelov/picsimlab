@@ -31,6 +31,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/un.h>
+#define closesocket(X) close(X)
 #else
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -234,7 +235,7 @@ void bsim_remote::ConnectionError(const char* s_error) {
 void bsim_remote::Disconnect(void) {
     if (connected) {
         if (sockfd >= 0)
-            close(sockfd);
+            closesocket(sockfd);
         sockfd = -1;
         connected = 0;
         PICSimLab.SetMcuPwr(0);
@@ -257,11 +258,11 @@ int bsim_remote::MGetArchitecture(void) {
 
 void bsim_remote::EndServers(void) {
     if (listenfd >= 0)
-        close(listenfd);
+        closesocket(listenfd);
     listenfd = -1;
 
     if (sockfd >= 0)
-        close(sockfd);
+        closesocket(sockfd);
     sockfd = -1;
 }
 

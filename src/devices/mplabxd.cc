@@ -42,6 +42,7 @@
 #define min(a, b) ((a) < (b) ? (a) : (b))
 #include <fcntl.h>
 #include <sys/unistd.h>
+#define closesocket(X) close(X)
 #else
 #include <winsock2.h>
 static WORD wVersionRequested = 2;
@@ -185,15 +186,15 @@ int mplabxd_start(void) {
     }
 
     setnblock(sockfd);
-    dprint("Debug connected!---------------------------------\n");
+    dprint("mplabxd: Debug connected!---------------------------------\n");
     return 0;
 }
 
 void mplabxd_stop(void) {
-    dprint("Debug disconnected!---------------------------------\n");
     if (sockfd >= 0) {
+        dprint("mplabxd: Debug disconnected!---------------------------------\n");
         shutdown(sockfd, SHUT_RDWR);
-        close(sockfd);
+        closesocket(sockfd);
     }
     sockfd = -1;
 }
@@ -213,7 +214,7 @@ void mplabxd_server_end(void) {
     if (server_started) {
         dprint("mplabxd: server end\n");
         shutdown(listenfd, SHUT_RDWR);
-        close(listenfd);
+        closesocket(listenfd);
     }
     listenfd = -1;
     server_started = 0;

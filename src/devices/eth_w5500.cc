@@ -31,6 +31,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/un.h>
+#define closesocket(X) close(X)
 #else
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -503,11 +504,11 @@ void eth_w5500_init(eth_w5500_t* eth, unsigned char linkon) {
 void eth_w5500_end(eth_w5500_t* eth) {
     for (int n = 0; n < 8; n++) {
         if (eth->sockfd[n] != INVALID_SOCKET_VALUE) {
-            close(eth->sockfd[n]);
+            closesocket(eth->sockfd[n]);
         }
 
         if (eth->listenfd[n] != INVALID_SOCKET_VALUE) {
-            close(eth->listenfd[n]);
+            closesocket(eth->listenfd[n]);
         }
     }
 }
@@ -923,7 +924,7 @@ void eth_w5500_process(eth_w5500_t* eth) {
                     eth->listenfd[eth->listenfd_map[n]] = eth->sockfd[n];
                     if (bind(eth->listenfd[eth->listenfd_map[n]], (sockaddr*)&serv, sizeof(serv))) {
                         printf("eth_w5500: bind error : %s \n", strerror(errno));
-                        close(eth->sockfd[n]);
+                        closesocket(eth->sockfd[n]);
                         eth->sockfd[n] = INVALID_SOCKET_VALUE;
                         eth->Socket[n][Sn_SR] = SOCK_CLOSED;
                         eth->status[n] = ER_BIND;
@@ -1255,7 +1256,7 @@ unsigned short eth_w5500_io(eth_w5500_t* eth, unsigned char mosi, unsigned char 
                                                                 perror("eth_w5500: setsockopt(SO_REUSEADDR) failed");
 
 #endif
-                                                                close(eth->sockfd[n]);
+                                                                closesocket(eth->sockfd[n]);
                                                                 eth->sockfd[n] = INVALID_SOCKET_VALUE;
                                                                 eth->Socket[n][Sn_SR] = SOCK_CLOSED;
                                                                 eth->listenfd[eth->listenfd_map[n]] =
@@ -1272,7 +1273,7 @@ unsigned short eth_w5500_io(eth_w5500_t* eth, unsigned char mosi, unsigned char 
                                                                      (sockaddr*)&serv, sizeof(serv))) {
                                                                 printf("eth_w5500: bind error : %s \n",
                                                                        strerror(errno));
-                                                                close(eth->sockfd[n]);
+                                                                closesocket(eth->sockfd[n]);
                                                                 eth->sockfd[n] = INVALID_SOCKET_VALUE;
                                                                 eth->Socket[n][Sn_SR] = SOCK_CLOSED;
                                                                 eth->status[n] = ER_BIND;
@@ -1285,7 +1286,7 @@ unsigned short eth_w5500_io(eth_w5500_t* eth, unsigned char mosi, unsigned char 
                                                                        SOMAXCONN)) {
                                                                 printf("eth_w5500: listen error : %s \n",
                                                                        strerror(errno));
-                                                                close(eth->sockfd[n]);
+                                                                closesocket(eth->sockfd[n]);
                                                                 eth->sockfd[n] = INVALID_SOCKET_VALUE;
                                                                 eth->Socket[n][Sn_SR] = SOCK_CLOSED;
                                                                 eth->status[n] = ER_LIST;
@@ -1322,7 +1323,7 @@ unsigned short eth_w5500_io(eth_w5500_t* eth, unsigned char mosi, unsigned char 
                                                     case CLOSE:
                                                         dsprintf("eth_w5500:Socket %i Close\n", n);
                                                         eth->Socket[n][Sn_SR] = SOCK_CLOSED;
-                                                        close(eth->sockfd[n]);
+                                                        closesocket(eth->sockfd[n]);
                                                         eth->sockfd[n] = INVALID_SOCKET_VALUE;
                                                         break;
                                                     case SEND:

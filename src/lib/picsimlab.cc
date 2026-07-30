@@ -406,6 +406,7 @@ void CPICSimLab::EndSimulation(int saveold, const char* newpath) {
     printf("PICSimLab: Saving \"%s\"\n", fname);
     pboard->MDumpMemory(fname);
 
+    pboard->EndServers();
     pboard->MEnd();
 
     if (Instance) {
@@ -431,7 +432,6 @@ void CPICSimLab::EndSimulation(int saveold, const char* newpath) {
         char* ptr = NULL;
         printf("PICSimLab: Reboot !!!\n");
         rcontrol_server_end();
-        pboard->EndServers();
         DeleteBoard();
         SystemCmd(PSC_GETEXECUTABLEPATH, NULL, cmd);
         if (newpath) {

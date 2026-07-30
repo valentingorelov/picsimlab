@@ -1171,7 +1171,6 @@ void CPWindow1::combo1_EvOnComboChange(CControl* control) {
 
 void CPWindow1::_EvOnDestroy(CControl* control) {
     rcontrol_server_end();
-    PICSimLab.GetBoard()->EndServers();
     PICSimLab.SetNeedReboot(0);
     PICSimLab.EndSimulation();
 

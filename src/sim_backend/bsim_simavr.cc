@@ -485,6 +485,7 @@ void bsim_simavr::MEnd(void) {
         avr_deinit_gdb(avr);
     } else {
         mplabxd_end();
+        mplabxd_server_end();
     }
 
     serial_port_close(&serialfd);
@@ -1644,10 +1645,6 @@ unsigned int bsim_simavr::DBGGetIDSize(void) {
 
 unsigned int bsim_simavr::DBGGetEEPROM_Size(void) {
     return avr->e2end + 1;
-}
-
-void bsim_simavr::EndServers(void) {
-    mplabxd_server_end();
 }
 
 int bsim_simavr::GetUARTRX(const int uart_num) {

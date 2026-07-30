@@ -406,7 +406,6 @@ void CPICSimLab::EndSimulation(int saveold, const char* newpath) {
     printf("PICSimLab: Saving \"%s\"\n", fname);
     pboard->MDumpMemory(fname);
 
-    pboard->EndServers();
     pboard->MEnd();
 
     if (Instance) {

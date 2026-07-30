@@ -127,7 +127,6 @@ public:
     unsigned short GetInputId(char* name) override;
     // return the output ids numbers of names used in output map
     unsigned short GetOutputId(char* name) override;
-    void EndServers(void) override;
     int GetDefaultClock(void) override;
 };
 

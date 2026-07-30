@@ -330,11 +330,6 @@ public:
     virtual int MGetArchitecture(void) = 0;
 
     /**
-     * @brief board servers shutdown
-     */
-    virtual void EndServers(void) {};
-
-    /**
      * @brief board microcontroller save non volatile memory to hex file
      */
     virtual int MDumpMemory(const char* fname) = 0;

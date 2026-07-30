@@ -53,11 +53,7 @@ bsim_ucsim::bsim_ucsim(void) {
     procid = -1;
 }
 
-void bsim_ucsim::MSetSerial(const char* port) {
-/*
-set_serial (&pic,0, port, 0, 0, 0);
-set_serial (&pic,1, "", 0, 0, 0);
- */ }
+void bsim_ucsim::MSetSerial(const char* port) {}
 
 int bsim_ucsim::MInit(const char* processor, const char* fname, float freq) {
     char fbuff[20];
@@ -298,9 +294,7 @@ void bsim_ucsim::MStep(void) {
     }
 }
 
-void bsim_ucsim::MStepResume(void) {
-    // if (pic.s2 == 1)step ();
-}
+void bsim_ucsim::MStepResume(void) {}
 
 // Called ever 1s to refresh status
 

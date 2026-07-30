@@ -72,6 +72,7 @@ int bsim_picsim::MInit(const char* processor, const char* fname, float freq) {
 }
 
 void bsim_picsim::MEnd(void) {
+    mplabxd_server_end();
     pic_end(&pic);
     // prog_end();
     mplabxd_end();
@@ -285,10 +286,6 @@ unsigned int bsim_picsim::DBGGetRAMLAWR(void) {
 
 unsigned int bsim_picsim::DBGGetRAMLARD(void) {
     return pic.rram;
-}
-
-void bsim_picsim::EndServers(void) {
-    mplabxd_server_end();
 }
 
 int bsim_picsim::GetUARTRX(const int uart_num) {

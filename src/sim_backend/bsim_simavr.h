@@ -99,7 +99,6 @@ public:
     unsigned int DBGGetCONFIGSize(void) override;
     unsigned int DBGGetIDSize(void) override;
     unsigned int DBGGetEEPROM_Size(void) override;
-    void EndServers(void) override;
     int GetDefaultClock(void) override { return 16; };
     int GetUARTRX(const int uart_num) override;
     int GetUARTTX(const int uart_num) override;

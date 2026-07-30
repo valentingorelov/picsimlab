@@ -79,7 +79,6 @@ public:
     unsigned int DBGGetEEPROM_Size(void) override;
     unsigned int DBGGetRAMLAWR(void) override;
     unsigned int DBGGetRAMLARD(void) override;
-    void EndServers(void) override;
     int GetDefaultClock(void) override { return 8; };
     int GetUARTRX(const int uart_num) override;
     int GetUARTTX(const int uart_num) override;

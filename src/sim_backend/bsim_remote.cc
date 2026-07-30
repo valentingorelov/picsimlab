@@ -245,6 +245,14 @@ void bsim_remote::Disconnect(void) {
 void bsim_remote::MEnd(void) {
     Disconnect();
 
+    if (listenfd >= 0)
+        closesocket(listenfd);
+    listenfd = -1;
+
+    if (sockfd >= 0)
+        closesocket(sockfd);
+    sockfd = -1;
+
     PICSimLab.ConfigMenuGUI(GMT_HEX);
 
     connected = 0;
@@ -254,16 +262,6 @@ void bsim_remote::MEnd(void) {
 
 int bsim_remote::MGetArchitecture(void) {
     return ARCH_UNKNOWN;
-}
-
-void bsim_remote::EndServers(void) {
-    if (listenfd >= 0)
-        closesocket(listenfd);
-    listenfd = -1;
-
-    if (sockfd >= 0)
-        closesocket(sockfd);
-    sockfd = -1;
 }
 
 void bsim_remote::MEraseFlash(void) {

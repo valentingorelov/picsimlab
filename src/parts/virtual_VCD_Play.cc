@@ -430,6 +430,11 @@ int cpart_VCD_Play::LoadVCD(std::string fname) {
             if (!data)  // option read
             {
                 id = strtok(buff, " \n\r");
+                if (id == NULL) {
+                    PICSimLab.RegisterError("VCD play", "Invalid VCD file " + fname);
+                    f_vcd_name[0] = '*';
+                    return 1;
+                }
                 if (!strcmp(id, "$timescale")) {
                     int itimescale;
                     value = strtok(NULL, " ");
@@ -437,6 +442,11 @@ int cpart_VCD_Play::LoadVCD(std::string fname) {
                     timescale = itimescale;
                 } else if (!strcmp(id, "$var")) {
                     value = strtok(NULL, " ");  // wire
+                    if (strcmp(value, "wire")) {
+                        PICSimLab.RegisterError("VCD play", "VCD var type [" + std::string(value) + "] not supported!");
+                        f_vcd_name[0] = '*';
+                        return 1;
+                    }
                     value = strtok(NULL, " ");  // 1
                     value = strtok(NULL, " ");  // const
                     signal[signal_count++] = value[0];
@@ -447,11 +457,18 @@ int cpart_VCD_Play::LoadVCD(std::string fname) {
         }
         vcd_data_count--;
 
+        if ((signal_count <= 0) || (vcd_data_count <= 0)) {
+            PICSimLab.RegisterError("VCD play", "Invalid VCD file " + fname);
+            f_vcd_name[0] = '*';
+            return 1;
+        }
+
         vcd_data = (vcd_reg_t*)malloc((vcd_data_count + 1) * sizeof(vcd_reg_t));
 
         if (!vcd_data) {
             printf("vcd_play: malloc error \n");
             fclose(fvcd);
+            f_vcd_name[0] = '*';
             return 0;
         }
 
@@ -491,7 +508,8 @@ int cpart_VCD_Play::LoadVCD(std::string fname) {
         vcd_step = 0;
         play = old_play;
     } else {
-        printf("vcd play: Error open file %s\n", (const char*)fname.c_str());
+        PICSimLab.RegisterError("VCD play", "Error open file " + fname);
+        f_vcd_name[0] = '*';
     }
     return 0;
 }

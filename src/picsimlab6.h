@@ -56,6 +56,7 @@ public:
     void button3_EvMouseButtonClick(CControl* control, const uint button, const uint x, const uint y, const uint state);
     void combo1_EvOnComboChange(CControl* control);
     void combo2_EvOnComboChange(CControl* control);
+    void combo3_EvOnComboChange(CControl* control);
     void dirdialog1_EvOnClose(const int retId);
     void filedialog1_EvOnClose(const int retId);
     void button4_EvMouseButtonClick(CControl* control, const uint button, const uint x, const uint y, const uint state);

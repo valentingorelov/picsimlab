@@ -173,6 +173,7 @@ CPWindow6::CPWindow6(void) {
     combo3.SetItems(lxT(""));
     combo3.SetText(lxT(""));
     combo3.SetReadOnly(1);
+    combo3.EvOnComboChange = EVONCOMBOCHANGE & CPWindow6::combo3_EvOnComboChange;
     CreateChild(&combo3);
     // button1
     button1.SetFOwner(this);

@@ -149,7 +149,11 @@ void CPWindow6::combo2_EvOnComboChange(CControl* control) {
 
         if (!ide.compare("PlatformIO IDE for VSCode")) {
             if (!framework.compare("Arduino")) {
-                combo3.SetItems("Blink,");
+                if (!pname.compare("attiny85") || !pname.compare("STM8S103")) {
+                    combo3.SetItems("Blink,");
+                } else {
+                    combo3.SetItems("Blink,Blink FreeRTOS,");
+                }
             } else if (!framework.compare("IDF")) {
                 combo3.SetItems("Blink,");
             } else if (!framework.compare("CMSIS")) {
@@ -183,6 +187,10 @@ void CPWindow6::combo2_EvOnComboChange(CControl* control) {
     combo3.SetEnable((combo3.GetItemsCount() == 1) ? 0 : 1);
 }
 
+void CPWindow6::combo3_EvOnComboChange(CControl* control) {
+    ctemplate = combo3.GetText();
+}
+
 void CPWindow6::dirdialog1_EvOnClose(int retId) {
     if (retId) {
         if (operation & OP_ONLY_CREATE) {
@@ -211,6 +219,8 @@ void CPWindow6::dirdialog1_EvOnClose(int retId) {
                         lxString monitor_rst = "";
                         lxString ftype = "";
                         lxString tbreak = "";
+                        lxString include_extra = "";
+                        lxString main_extra = "";
                         if (!bname.compare("Arduino Uno")) {
                             pioboard = "uno";
                             pioplatform = "atmelavr";
@@ -219,6 +229,10 @@ void CPWindow6::dirdialog1_EvOnClose(int retId) {
                             hwpin = "19";
                             ftype = "hex";
                             tbreak = "setup";
+                            if (!ctemplate.compare("Blink FreeRTOS")) {
+                                include_extra = "#include <Arduino_FreeRTOS.h>\n";
+                                env_extra = "lib_deps =\n	feilipu/FreeRTOS\n";
+                            }
                         } else if (!bname.compare("Arduino Nano")) {
                             pioboard = "nanoatmega328";
                             pioplatform = "atmelavr";
@@ -227,6 +241,10 @@ void CPWindow6::dirdialog1_EvOnClose(int retId) {
                             hwpin = "17";
                             ftype = "hex";
                             tbreak = "setup";
+                            if (!ctemplate.compare("Blink FreeRTOS")) {
+                                include_extra = "#include <Arduino_FreeRTOS.h>\n";
+                                env_extra = "lib_deps =\n	feilipu/FreeRTOS\n";
+                            }
                         } else if (!bname.compare("Arduino Mega")) {
                             pioboard = "megaatmega2560";
                             pioplatform = "atmelavr";
@@ -235,6 +253,10 @@ void CPWindow6::dirdialog1_EvOnClose(int retId) {
                             hwpin = "26";
                             ftype = "hex";
                             tbreak = "setup";
+                            if (!ctemplate.compare("Blink FreeRTOS")) {
+                                include_extra = "#include <Arduino_FreeRTOS.h>\n";
+                                env_extra = "lib_deps =\n	feilipu/FreeRTOS\n";
+                            }
                         } else if (!bname.compare("Franzininho DIY")) {
                             pioboard = "attiny85";
                             pioplatform = "atmelavr";
@@ -250,6 +272,11 @@ void CPWindow6::dirdialog1_EvOnClose(int retId) {
                             if (!framework.compare("Arduino")) {
                                 pioframework = "arduino";
                                 tbreak = "setup";
+                                if (!ctemplate.compare("Blink FreeRTOS")) {
+                                    include_extra = "#include <STM32FreeRTOS.h>\n";
+                                    env_extra = "lib_deps =\n	stm32duino/STM32duino FreeRTOS\n";
+                                    main_extra = "\n  vTaskStartScheduler();\n  while(1);\n";
+                                }
                             } else {
                                 pioframework = "cmsis";
                                 pio_test = 0;
@@ -265,6 +292,11 @@ void CPWindow6::dirdialog1_EvOnClose(int retId) {
                             if (!framework.compare("Arduino")) {
                                 pioframework = "arduino";
                                 tbreak = "setup";
+                                if (!ctemplate.compare("Blink FreeRTOS")) {
+                                    include_extra = "#include <STM32FreeRTOS.h>\n";
+                                    env_extra = "lib_deps =\n	stm32duino/STM32duino FreeRTOS\n";
+                                    main_extra = "\n  vTaskStartScheduler();\n  while(1);\n";
+                                }
                             } else {
                                 pioframework = "cmsis";
                                 pio_test = 0;
@@ -341,7 +373,12 @@ void CPWindow6::dirdialog1_EvOnClose(int retId) {
                                                                          .utf8_str());
                                 return;
                             }
-                            fprintf(fmain, blink_code, (const char*)ledpin.c_str());
+                            if (!ctemplate.compare("Blink FreeRTOS")) {
+                                fprintf(fmain, blink_RTOS_code, (const char*)include_extra.c_str(),
+                                        (const char*)ledpin.c_str(), (const char*)main_extra.c_str());
+                            } else {
+                                fprintf(fmain, blink_code, (const char*)ledpin.c_str());
+                            }
                             fclose(fmain);
                             if (!pname.compare("STM8S103")) {
                                 PICSimLab.SystemCmd(PSC_RENAMEFILE, (const char*)(prjdir + "src/main.cpp").utf8_str(),

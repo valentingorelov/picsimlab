@@ -1443,8 +1443,11 @@ void CPWindow1::menu1_EvBoard(CControl* control) {
 
 void CPWindow1::menu1_EvMicrocontroller(CControl* control) {
     if (!PICSimLab.GetErrorCount()) {
-        PICSimLab.SetProcessorName(PICSimLab.GetBoard()->GetProcessorName());
-        PICSimLab.GetBoard()->SetProcessorName((const char*)((CItemMenu*)control)->GetText().c_str());
+        std::string proc_actual = PICSimLab.GetBoard()->GetProcessorName();
+        std::string proc_next = (const char*)((CItemMenu*)control)->GetText().c_str();
+
+        PICSimLab.SetProcessorName(proc_actual);
+        PICSimLab.GetBoard()->SetProcessorName(proc_next);
 
         SetTitle(((PICSimLab.GetInstanceNumber() > 0)
                       ? ("PICSimLab[" + std::to_string(PICSimLab.GetInstanceNumber()) + "] - ")
@@ -1457,12 +1460,15 @@ void CPWindow1::menu1_EvMicrocontroller(CControl* control) {
         PICSimLab.SetNeedResize(1);
         SpareParts.SetUseAlias(0);
 
+        if (proc_actual.compare(proc_next)) {
+            PICSimLab.GetBoard()->SetPWActiveProject(" ");
+        }
+
         if (!PICSimLab.GetBoard()->GetSupportedIDEs().compare("N/A,")) {
             menu1_Code_Project_Wizard.SetEnable(0);
             menu1_Code_Open_Active_Project.SetEnable(0);
         } else {
             menu1_Code_Project_Wizard.SetEnable(1);
-
             if (strstr(PICSimLab.GetBoard()->GetSupportedIDEs().c_str(),
                        PICSimLab.GetBoard()->GetPWProjectType().c_str())) {
                 if (PICSimLab.GetBoard()->GetPWActiveProject().length() > 2) {

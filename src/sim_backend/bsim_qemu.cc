@@ -1005,6 +1005,40 @@ int bsim_qemu::MGetArchitecture(void) {
     return ARCH_UNKNOWN;
 }
 
+std ::string bsim_qemu::GetSimBackends(void) {
+    switch (SimType) {
+        case QEMU_SIM_STM32:
+            return "Qemu-stm32,";
+            break;
+        case QEMU_SIM_ESP32:
+        case QEMU_SIM_ESP32_C3:
+            return "Qemu-esp32,";
+            break;
+        default:
+            return "N/A,";
+            break;
+    }
+    return "N/A,";
+}
+
+std ::string bsim_qemu::GetDebuggers(void) {
+    switch (SimType) {
+        case QEMU_SIM_STM32:
+            return "arm-none-eabi-gdb,";
+            break;
+        case QEMU_SIM_ESP32:
+            return "xtensa-esp32-elf-gdb,";
+            break;
+        case QEMU_SIM_ESP32_C3:
+            return "riscv32-esp-elf-gdb,";
+            break;
+        default:
+            return "N/A,";
+            break;
+    }
+    return "N/A,";
+}
+
 void bsim_qemu::MEraseFlash(void) {
     // erase_flash ();
 }

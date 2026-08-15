@@ -330,6 +330,16 @@ public:
     virtual int MGetArchitecture(void) = 0;
 
     /**
+     * @brief Return board backends name
+     */
+    virtual std ::string GetSimBackends(void) = 0;
+
+    /**
+     * @brief Return board supported debug interfaces name
+     */
+    virtual std ::string GetDebuggers(void) = 0;
+
+    /**
      * @brief board microcontroller save non volatile memory to hex file
      */
     virtual int MDumpMemory(const char* fname) = 0;

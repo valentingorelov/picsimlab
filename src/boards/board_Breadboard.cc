@@ -682,6 +682,13 @@ int cboard_Breadboard::MGetArchitecture(void) {
     return ARCH_UNKNOWN;
 }
 
+std ::string cboard_Breadboard::GetSimBackends(void) {
+    return bsim_picsim::GetSimBackends() + bsim_simavr::GetSimBackends();
+}
+std ::string cboard_Breadboard::GetDebuggers(void) {
+    return bsim_simavr::GetDebuggers();
+}
+
 int cboard_Breadboard::MDumpMemory(const char* fname) {
     switch (ptype) {
         case _PIC:

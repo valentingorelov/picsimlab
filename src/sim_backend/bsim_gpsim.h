@@ -40,6 +40,8 @@ public:
     int MInit(const char* processor, const char* fname, float freq) override;
     void MEnd(void) override;
     int MGetArchitecture(void) override;
+    std ::string GetSimBackends(void) override { return "gpsim,"; };
+    std ::string GetDebuggers(void) override { return "N/A,"; };
     int MDumpMemory(const char* fname) override;
     void MEraseFlash(void) override;
     void MSetFreq(float freq) override;

@@ -67,6 +67,8 @@
 #include "rcontrol.h"
 #include "spareparts.h"
 
+#include "../picsimlab6.h"  //TODO move to prjwizard in lib
+
 #define MAX_CLIENTS 4
 #define BSIZE 1024
 
@@ -520,6 +522,27 @@ int rcontrol_loop(void) {
                             ret += sendtext(client_id, PICSimLab.GetSupportedBoards().c_str());
                             ret += sendtext(client_id, "\r\n");
                             ret += sendtext(client_id, "Ok\r\n>");
+                        } else if (!strcmp(cmd, "bblist")) {
+                            // Command bblist
+                            // ========================================================
+                            ret += sendtext(client_id, "Supported Backend Simulator:\r\n");
+                            ret += sendtext(client_id, PICSimLab.GetBoard()->GetSimBackends().c_str());
+                            ret += sendtext(client_id, "\r\n");
+                            ret += sendtext(client_id, "Ok\r\n>");
+                        } else if (!strcmp(cmd, "bdlist")) {
+                            // Command bdlist
+                            // ========================================================
+                            ret += sendtext(client_id, "Supported Debuggers:\r\n");
+                            ret += sendtext(client_id, PICSimLab.GetBoard()->GetDebuggers().c_str());
+                            ret += sendtext(client_id, "\r\n");
+                            ret += sendtext(client_id, "Ok\r\n>");
+                        } else if (!strcmp(cmd, "bilist")) {
+                            // Command bilist
+                            // ========================================================
+                            ret += sendtext(client_id, "Project Wizard Supported IDEs:\r\n");
+                            ret += sendtext(client_id, PICSimLab.GetBoard()->GetSupportedIDEs().c_str());
+                            ret += sendtext(client_id, "\r\n");
+                            ret += sendtext(client_id, "Ok\r\n>");
                         } else if (!strcmp(cmd, "buclist")) {
                             // Command buclist
                             // ========================================================
@@ -865,35 +888,82 @@ int rcontrol_loop(void) {
                             // Command help
                             // ========================================================
                             ret += sendtext(client_id, "List of supported commands:\r\n");
-                            ret += sendtext(client_id, "  blist                - list supported boards\r\n");
-                            ret += sendtext(client_id, "  buclist              - list board supported MCUs\n");
-                            ret += sendtext(client_id, "  clk [val MHz]        - show or set simulation clock\r\n");
-                            ret += sendtext(client_id, "  dumpe [addr] [count] - dump internal EEPROM memory\r\n");
-                            ret += sendtext(client_id, "  dumpf [addr] [count] - dump Flash memory\r\n");
-                            ret += sendtext(client_id, "  dumpr [addr] [count] - dump RAM memory\r\n");
-                            ret += sendtext(client_id, "  exit                 - shutdown PICSimLab\r\n");
-                            ret += sendtext(client_id, "  get obj              - get object value\r\n");
-                            ret += sendtext(client_id, "  help                 - show this message\r\n");
-                            ret += sendtext(client_id, "  info                 - show actual setup info and objs\r\n");
-                            ret += sendtext(client_id, "  loadhex file         - load hex/bin file (full path)\r\n");
-                            ret += sendtext(client_id, "  oscmeasures ch       - read osc channel 1 or 2 measures\r\n");
-                            ret += sendtext(client_id, "  oscrdcfg             - read osc configuration\r\n");
-                            ret += sendtext(client_id, "  oscwrcfg idx \"cfg\"   - write osc configuration\r\n");
-                            ret += sendtext(client_id, "  oscshow [0/1]        - show status or toggle osc window\r\n");
-                            ret += sendtext(client_id, "  pins                 - show pins directions and values\r\n");
-                            ret += sendtext(client_id, "  pinsl                - show pins formatted info\r\n");
-                            ret += sendtext(client_id, "  quit                 - quit remote control interface\r\n");
-                            ret += sendtext(client_id, "  reset                - reset the board\r\n");
-                            ret += sendtext(client_id, "  set obj value        - set object with value\r\n");
-                            ret += sendtext(client_id, "  sim [start/stop]     - show status or start/stop sim\r\n");
-                            ret += sendtext(client_id, "  spadd \"pname\" x y    - adds the named spare part\r\n");
-                            ret += sendtext(client_id, "  spdel pid/all        - delete one spare part or all\r\n");
-                            ret += sendtext(client_id, "  sprdcfg pid          - read spare part configuration\r\n");
-                            ret += sendtext(client_id, "  spwrcfg pid \"cfg\"    - write spare part configuration\r\n");
-                            ret += sendtext(client_id, "  splist               - list supported spare parts\r\n");
-                            ret += sendtext(client_id, "  spshow [0/1]         - show status or toggle sp window\r\n");
-                            ret += sendtext(client_id, "  sync                 - wait to sync with timer event\r\n");
-                            ret += sendtext(client_id, "  version              - show PICSimLab version\r\n");
+                            ret += sendtext(client_id,
+                                            "  blist                               - list supported boards\r\n");
+                            ret += sendtext(
+                                client_id, "  bblist                              - list board supported backends\r\n");
+                            ret +=
+                                sendtext(client_id,
+                                         "  bdlist                              - list board supported debuggers\r\n");
+                            ret += sendtext(client_id,
+                                            "  bilist                              - list board supported IDEs\n");
+                            ret += sendtext(client_id,
+                                            "  buclist                             - list board supported MCUs\n");
+                            ret += sendtext(client_id,
+                                            "  clk [val MHz]                       - show or set simulation clock\r\n");
+                            ret += sendtext(client_id,
+                                            "  dumpe [addr] [count]                - dump internal EEPROM memory\r\n");
+                            ret += sendtext(client_id, "  dumpf [addr] [count]                - dump Flash memory\r\n");
+                            ret += sendtext(client_id, "  dumpr [addr] [count]                - dump RAM memory\r\n");
+                            ret +=
+                                sendtext(client_id, "  exit                                - shutdown PICSimLab\r\n");
+                            ret += sendtext(client_id, "  get obj                             - get object value\r\n");
+                            ret += sendtext(client_id, "  help                                - show this message\r\n");
+                            ret +=
+                                sendtext(client_id,
+                                         "  info                                - show actual setup info and objs\r\n");
+                            ret += sendtext(
+                                client_id, "  loadhex file                        - load hex/bin file (full path)\r\n");
+                            ret += sendtext(
+                                client_id,
+                                "  oscmeasures ch                      - read osc channel 1 or 2 measures\r\n");
+                            ret += sendtext(client_id,
+                                            "  oscrdcfg                            - read osc configuration\r\n");
+                            ret += sendtext(client_id,
+                                            "  oscwrcfg idx \"cfg\"                  - write osc configuration\r\n");
+                            ret += sendtext(
+                                client_id,
+                                "  oscshow [0/1]                       - show status or toggle osc window\r\n");
+                            ret +=
+                                sendtext(client_id,
+                                         "  pins                                - show pins directions and values\r\n");
+                            ret += sendtext(client_id,
+                                            "  pinsl                               - show pins formatted info\r\n");
+                            ret += sendtext(
+                                client_id,
+                                "  pwcreate \"ide\" \"fw\" \"tp\" \"dir\" open - PrjWizard project create\r\n");
+                            ret +=
+                                sendtext(client_id,
+                                         "  pwflist \"ide\"                       - list PrjWizard ide frameworks\r\n");
+                            ret += sendtext(client_id,
+                                            "  pwtlist \"ide\" \"fw\"                  - list PrjWizard templates\r\n");
+                            ret += sendtext(
+                                client_id, "  quit                                - quit remote control interface\r\n");
+                            ret += sendtext(client_id, "  reset                               - reset the board\r\n");
+                            ret += sendtext(client_id,
+                                            "  saveworkspace \"file.pzw\"            - save PICSimLab workspace\r\n");
+                            ret += sendtext(client_id,
+                                            "  set obj value                       - set object with value\r\n");
+                            ret += sendtext(
+                                client_id, "  sim [start/stop]                    - show status or start/stop sim\r\n");
+                            ret += sendtext(client_id,
+                                            "  spadd \"pname\" x y                   - adds the named spare part\r\n");
+                            ret += sendtext(client_id,
+                                            "  spdel pid/all                       - delete one spare part or all\r\n");
+                            ret += sendtext(
+                                client_id, "  sprdcfg pid                         - read spare part configuration\r\n");
+                            ret += sendtext(
+                                client_id,
+                                "  spwrcfg pid \"cfg\"                   - write spare part configuration\r\n");
+                            ret += sendtext(client_id,
+                                            "  splist                              - list supported spare parts\r\n");
+                            ret +=
+                                sendtext(client_id,
+                                         "  spshow [0/1]                        - show status or toggle sp window\r\n");
+                            ret += sendtext(
+                                client_id, "  sync                                - wait to sync with timer event\r\n");
+                            ret += sendtext(client_id,
+                                            "  version                             - show PICSimLab version\r\n");
 
                             ret += sendtext(client_id, "Ok\r\n>");
                         } else {
@@ -1099,6 +1169,68 @@ int rcontrol_loop(void) {
                                 ret += sendtext(client_id, lstemp);
                             }
                             ret += sendtext(client_id, "Ok\r\n>");
+                        } else if (!strncmp(cmd, "pwcreate ", 9)) {
+                            // Command pwcreate =====================================================
+
+                            char ide[100];
+                            char framework[100];
+                            char ctemplate[100];
+                            char dir[512];
+                            int open = 0;
+                            ide[0] = 0;
+                            framework[0] = 0;
+                            ctemplate[0] = 0;
+                            dir[0] = 0;
+                            sscanf(cmd + 9, " \"%99[^\"]\" \"%99[^\"]\" \"%99[^\"]\" \"%99[^\"]\" %i", ide, framework,
+                                   ctemplate, dir, &open);
+
+                            if (open == 0) {
+                                open = 1;
+                            } else {
+                                open = 3;
+                            }
+
+                            if (ide[0] && framework[0] && ctemplate[0] && ide[0] && open) {
+                                if (dir[strlen(dir)] != '/') {
+                                    strcat(dir, "/");
+                                }
+                                int st = Window6.CreateProject(ide, framework, ctemplate, dir, open);
+                                if (st == 0) {
+                                    ret += sendtext(client_id, "Ok\r\n>");
+                                } else {
+                                    ret = sendtext(client_id, "ERROR\r\n>");
+                                }
+                            } else {
+                                ret = sendtext(client_id, "ERROR\r\n>");
+                            }
+                        } else if (!strncmp(cmd, "pwflist ", 8)) {
+                            // Command pwflist =====================================================
+
+                            char ide[100];
+                            ide[0] = 0;
+                            sscanf(cmd + 8, " \"%99[^\"]\" ", ide);
+                            if (ide[0]) {
+                                ret = sendtext(client_id, "Project Wizard Supported Frameworks:\r\n");
+                                ret = sendtext(client_id, Window6.GetFrameworkList(ide));
+                                ret += sendtext(client_id, "\r\nOk\r\n>");
+                            } else {
+                                ret = sendtext(client_id, "ERROR\r\n>");
+                            }
+                        } else if (!strncmp(cmd, "pwtlist ", 8)) {
+                            // Command pwtlist =====================================================
+
+                            char ide[100];
+                            char framework[100];
+                            ide[0] = 0;
+                            framework[0] = 0;
+                            sscanf(cmd + 8, " \"%99[^\"]\" \"%99[^\"]\" ", ide, framework);
+                            if (ide[0] && framework[0]) {
+                                ret = sendtext(client_id, "Project Wizard Supported Templates:\r\n");
+                                ret = sendtext(client_id, Window6.GetExampleList(ide, framework));
+                                ret += sendtext(client_id, "\r\nOk\r\n>");
+                            } else {
+                                ret = sendtext(client_id, "ERROR\r\n>");
+                            }
                         } else {
                             ret = sendtext(client_id, "ERROR\r\n>");
                         }
@@ -1124,7 +1256,19 @@ int rcontrol_loop(void) {
                         }
                         break;
                     case 's':
-                        if (!strncmp(cmd, "set ", 4)) {
+                        if (!strncmp(cmd, "saveworkspace ", 14)) {
+                            // Command saveworkspace =====================================================
+
+                            char dir[512];
+
+                            sscanf(cmd + 14, " \"%99[^\"]\" ", dir);
+
+                            if (!PICSimLab.SaveWorkspace(dir)) {
+                                ret = sendtext(client_id, "Ok\r\n>");
+                            } else {
+                                ret = sendtext(client_id, "ERROR\r\n>");
+                            }
+                        } else if (!strncmp(cmd, "set ", 4)) {
                             // Command set
                             // =========================================================
                             char* ptr;

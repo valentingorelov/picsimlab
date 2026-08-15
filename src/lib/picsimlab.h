@@ -236,7 +236,7 @@ public:
     int LoadHexFile(std::string fname, const int saveold = 0);
 
     void LoadWorkspace(std::string fnpzw, const int show_readme = 1);
-    void SaveWorkspace(std::string fnpzw);
+    int SaveWorkspace(std::string fnpzw);
 
     void SetSimulationRun(int run);
     int GetSimulationRun(void);
@@ -350,6 +350,7 @@ private:
     int check_for_devel;
     std::string pw_vscode_path;
     std::string pw_mplabx_path;
+    std::string pzw_creation_date;
 };
 
 extern CPICSimLab PICSimLab;

@@ -84,6 +84,7 @@ CPICSimLab::CPICSimLab() {
     check_for_devel = 0;
     pw_vscode_path = " ";
     pw_mplabx_path = " ";
+    pzw_creation_date = " ";
 
     OnUpdateStatus = NULL;
     OnConfigure = NULL;
@@ -561,6 +562,13 @@ void CPICSimLab::LoadWorkspace(std::string fnpzw, const int show_readme) {
 
                 continue;
             }
+            if (!strcmp(name, "pzw_creation_date")) {
+                pzw_creation_date = value;
+                continue;
+            }
+            if (!strcmp(name, "pzw_modify_date")) {
+                continue;
+            }
 #ifndef LEGACY081
             SavePrefs(name, value);
 #else
@@ -726,10 +734,11 @@ void CPICSimLab::LoadWorkspace(std::string fnpzw, const int show_readme) {
 #endif  // CONVERTER_MODE
 }
 
-void CPICSimLab::SaveWorkspace(std::string fnpzw) {
+int CPICSimLab::SaveWorkspace(std::string fnpzw) {
     char tmpdir[1024];
     char home[1024];
     char fname[2048];
+    char fname_[2048];
     char code_src[512];
 
 #if !defined(__EMSCRIPTEN__) && !defined(CONVERTER_MODE)
@@ -737,7 +746,7 @@ void CPICSimLab::SaveWorkspace(std::string fnpzw) {
         char bname[512];
         SystemCmd(PSC_BASENAME, fnpzw.c_str(), bname);
         if (!SystemCmd(PSC_SHOWDIALOG, (std::string("Overwriting file: ") + bname + "?").c_str())) {
-            return;
+            return 1;
         }
     }
 #endif
@@ -748,16 +757,15 @@ void CPICSimLab::SaveWorkspace(std::string fnpzw) {
     snprintf(fname, 1279, "%s/picsimlab.ini", home);
     PrefsSaveToFile(fname);
 
-    if (strlen(pzwtmpdir) && SystemCmd(PSC_DIREXISTS, pzwtmpdir)) {
-        memcpy(tmpdir, pzwtmpdir, 1023);
+    char btdir[256];
+    SystemCmd(PSC_GETTEMPDIR, "PICSimLab", btdir);
+    snprintf(tmpdir, 1023, "%s/picsimlab-XXXXXX", btdir);
+    close(mkstemp(tmpdir));
+    unlink(tmpdir);
+    SystemCmd(PSC_CREATEDIR, tmpdir);
 
-    } else {
-        char btdir[256];
-        SystemCmd(PSC_GETTEMPDIR, "PICSimLab", btdir);
-        snprintf(tmpdir, 1023, "%s/picsimlab-XXXXXX", btdir);
-        close(mkstemp(tmpdir));
-        unlink(tmpdir);
-        SystemCmd(PSC_CREATEDIR, tmpdir);
+    if (strlen(pzwtmpdir) && SystemCmd(PSC_DIREXISTS, pzwtmpdir)) {
+        SystemCmd(PSC_COPYDIRS, pzwtmpdir, tmpdir);
     }
 
     memcpy(home, tmpdir, 1023);
@@ -844,6 +852,27 @@ void CPICSimLab::SaveWorkspace(std::string fnpzw) {
     SavePrefs("spare_on", std::to_string(pboard->GetUseSpareParts()));
     SavePrefs("picsimlab_lfile", " ");
 
+    time_t now = time(NULL);
+    char date_str[26];
+
+#if defined(_WIN32) || defined(_WIN64)
+    if (ctime_s(date_str, sizeof(date_str), &now) == 0)
+#else
+    if (ctime_r(&now, date_str) != NULL)
+#endif
+    {
+        date_str[24] = 0;
+    } else {
+        strcpy(date_str, "date_str error");
+    }
+
+    if (pzw_creation_date.length() > 2) {
+        SavePrefs("pzw_creation_date", pzw_creation_date);
+    } else {
+        SavePrefs("pzw_creation_date", date_str);
+    }
+    SavePrefs("pzw_modify_date", date_str);
+
     pboard->WritePreferences();
 
     if (pboard->GetUseOscilloscope())
@@ -860,6 +889,20 @@ void CPICSimLab::SaveWorkspace(std::string fnpzw) {
     snprintf(fname, 1279, "%s/mdump_%s_%s.hex", home, boards_list[lab_].name_, (const char*)proc_.c_str());
 
     printf("PICSimLab: Saving \"%s\"\n", fname);
+
+    SystemCmd(PSC_REMOVEFILE, fname);
+
+    // change .hex to .bin
+    strncpy(fname_, fname, 2048);
+    fname_[strlen(fname) - 3] = 0;
+    strcat(fname_, "bin");
+    SystemCmd(PSC_REMOVEFILE, fname_);
+    // change .hex to .bak
+    strncpy(fname_, fname, 2048);
+    fname_[strlen(fname) - 3] = 0;
+    strcat(fname_, "bak");
+    SystemCmd(PSC_REMOVEFILE, fname_);
+
     pboard->MDumpMemory(fname);
 
     // write spare part config
@@ -910,6 +953,8 @@ void CPICSimLab::SaveWorkspace(std::string fnpzw) {
 #ifdef CONVERTER_MODE
     WDestroy();
 #endif
+
+    return 0;
 }
 
 void CPICSimLab::SetSimulationRun(int run) {
@@ -1255,7 +1300,7 @@ void CPICSimLab::Configure(const char* home, int use_default_board, int create, 
         if (Workspacefn.length() < 2) {
             SetWorkspaceFileName(GetLastWorkspaceFileName());
             SetLastWorkspaceFileName("");
-            strncpy(pzwtmpdir, lastpzwtmpdir, 1023);
+            strncpy(pzwtmpdir, lastpzwtmpdir, 1024);
             lastpzwtmpdir[0] = 0;
         }
     }

@@ -397,9 +397,9 @@ bool CSpareParts::LoadConfig(std::string fname, const int disable_debug) {
 
         for (unsigned int i = 0; i < prefs.size(); i++) {
             if (newformat) {
-                sscanf(prefs.at(i).c_str(), "%255[^,],%i,%i,%i:%4095[^\n]", name, &x, &y, &orient, temp);
+                sscanf(prefs.at(i).c_str(), "%255[^,],%i,%i,%i:%4095[^\r\n]", name, &x, &y, &orient, temp);
             } else {
-                sscanf(prefs.at(i).c_str(), "%255[^,],%i,%i:%4095[^\n]", name, &x, &y, temp);
+                sscanf(prefs.at(i).c_str(), "%255[^,],%i,%i:%4095[^\r\n]", name, &x, &y, temp);
             }
 
             // typo fix

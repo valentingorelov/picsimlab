@@ -191,7 +191,7 @@ std::string cpart_UART::WritePreferences(void) {
 }
 
 int cpart_UART::ReadPreferences(std::string value) {
-    int ret = sscanf(value.c_str(), "%hhu,%hhu,%u,%[^\n]", &pins[0], &pins[1], &uart_speed, uart_name);
+    int ret = sscanf(value.c_str(), "%hhu,%hhu,%u,%[^\r\n]", &pins[0], &pins[1], &uart_speed, uart_name);
 
     Reset();
     if (uart_name[0] != '*') {

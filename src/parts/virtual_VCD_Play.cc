@@ -229,7 +229,7 @@ std::string cpart_VCD_Play::WritePreferences(void) {
 }
 
 int cpart_VCD_Play::ReadPreferences(std::string value) {
-    int ret = sscanf(value.c_str(), "%hhu,%hhu,%hhu,%hhu,%hhu,%hhu,%hhu,%hhu,%hhu,%[^\n]", &output_pins[0],
+    int ret = sscanf(value.c_str(), "%hhu,%hhu,%hhu,%hhu,%hhu,%hhu,%hhu,%hhu,%hhu,%[^\r\n]", &output_pins[0],
                      &output_pins[1], &output_pins[2], &output_pins[3], &output_pins[4], &output_pins[5],
                      &output_pins[6], &output_pins[7], &play, f_vcd_name);
 

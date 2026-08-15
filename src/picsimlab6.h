@@ -65,14 +65,18 @@ public:
     CPWindow6(void);
     // lxrad automatic generated block end, don't edit above!
 
+    const char* GetFrameworkList(const std::string ide);
+    const char* GetExampleList(const std::string ide, const std::string framework);
     int OpenProject(lxString path, lxString type);
+    int CreateProject(const std::string ide, const std::string framework, const std::string ctemplate,
+                      const lxString prjdir, const int operation);
 
 private:
-    lxString bname;
-    lxString pname;
-    lxString ide;
-    lxString framework;
-    lxString ctemplate;
+    std::string board;
+    std::string processor;
+    std::string ide;
+    std::string framework;
+    std::string ctemplate;
     int operation;
 };
 

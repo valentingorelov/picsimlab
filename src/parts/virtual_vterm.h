@@ -71,7 +71,7 @@ private:
     unsigned char show;
     int wvtermId;
     int enable_log;
-    char log_fname[200];
+    std::string log_fname;
     FILE* flog;
 };
 

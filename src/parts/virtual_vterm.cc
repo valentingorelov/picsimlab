@@ -93,8 +93,7 @@ cpart_vterm::cpart_vterm(const unsigned x, const unsigned y, const char* name, c
     SetPCWProperties(pcwprop);
 
     enable_log = 0;
-    log_fname[0] = '*';
-    log_fname[1] = 0;
+    log_fname = '*';
     flog = NULL;
 
     PinCount = 2;
@@ -350,7 +349,7 @@ unsigned short cpart_vterm::GetOutputId(char* name) {
 }
 
 std::string cpart_vterm::WritePreferences(void) {
-    char prefs[256];
+    char prefs[1024];
 
     int x, y, w, h;
 
@@ -360,21 +359,23 @@ std::string cpart_vterm::WritePreferences(void) {
     SpareParts.WindowCmd(wvtermId, NULL, PWA_GETHEIGHT, NULL, &h);
 
     sprintf(prefs, "%hhu,%hhu,%hhu,%u,%hhu,%i,%i,%i,%i,%i,%s", pins[0], pins[1], lending, vterm_speed, show, x, y, w, h,
-            enable_log, log_fname);
+            enable_log, log_fname.c_str());
 
     return prefs;
 }
 
 int cpart_vterm::ReadPreferences(std::string value) {
     int x, y, w, h;
+    char buff[512];
     int ret = sscanf(value.c_str(), "%hhu,%hhu,%hhu,%u,%hhu,%i,%i,%i,%i,%i,%[^\r\n]", &pins[0], &pins[1], &lending,
-                     &vterm_speed, &show, &x, &y, &w, &h, &enable_log, log_fname);
+                     &vterm_speed, &show, &x, &y, &w, &h, &enable_log, buff);
+    log_fname = buff;
     show |= 0x80;
 
     SpareParts.WindowCmd(wvtermId, NULL, PWA_SETX, std::to_string(x).c_str());
     SpareParts.WindowCmd(wvtermId, NULL, PWA_SETY, std::to_string(y).c_str());
 
-    if (ret != 9) {  // for compatibility with older versions
+    if (ret != 11) {  // for compatibility with older versions
         w = 530;
         h = 400;
     }
@@ -387,8 +388,8 @@ int cpart_vterm::ReadPreferences(std::string value) {
     SpareParts.WindowCmd(wvtermId, NULL, PWA_SETWIDTH, std::to_string(w).c_str());
     SpareParts.WindowCmd(wvtermId, NULL, PWA_SETHEIGHT, std::to_string(h).c_str());
 
-    if (enable_log && (log_fname[0] != '*')) {
-        flog = fopen_UTF8(log_fname, "a");
+    if (enable_log && (log_fname.compare("*"))) {
+        flog = fopen_UTF8(log_fname.c_str(), "a");
         if (!flog) {
             enable_log = 0;
         }
@@ -477,7 +478,7 @@ void cpart_vterm::OnMouseButtonPress(unsigned int inputId, unsigned int button, 
                     if (log_fname[0] == '*') {
                         SpareParts.WindowCmd(PW_MAIN, "filedialog1", PWA_FILEDIALOGSETFNAME, "untitled.txt");
                     } else {
-                        SpareParts.WindowCmd(PW_MAIN, "filedialog1", PWA_FILEDIALOGSETFNAME, log_fname);
+                        SpareParts.WindowCmd(PW_MAIN, "filedialog1", PWA_FILEDIALOGSETFNAME, log_fname.c_str());
                     }
                     SpareParts.Setfdtype(id);
                     SpareParts.WindowCmd(PW_MAIN, "filedialog1", PWA_FILEDIALOGRUN, NULL);
@@ -509,7 +510,7 @@ void cpart_vterm::OnMouseButtonPress(unsigned int inputId, unsigned int button, 
                         },
                         log_fname);
 #else
-                    PICSimLab.SystemCmd(PSC_LAUNCHDEFAULAPPLICATION, log_fname);
+                    PICSimLab.SystemCmd(PSC_LAUNCHDEFAULAPPLICATION, log_fname.c_str());
 #endif
                 }
             }
@@ -552,11 +553,11 @@ void cpart_vterm::filedialog_EvOnClose(int retId) {
     if (retId) {
         int type;
         SpareParts.WindowCmd(PW_MAIN, "filedialog1", PWA_FILEDIALOGGETTYPE, NULL, &type);
-        if ((type == (PFD_SAVE | PFD_CHANGE_DIR))) {
-            char buff[256];
+        if (type == (PFD_SAVE | PFD_CHANGE_DIR)) {
+            char buff[512];
             SpareParts.WindowCmd(PW_MAIN, "filedialog1", PWA_FILEDIALOGGETFNAME, NULL, buff);
-            strcpy(log_fname, buff);
-            flog = fopen_UTF8(log_fname, "a");
+            log_fname = buff;
+            flog = fopen_UTF8(log_fname.c_str(), "a");
             if (flog) {
                 enable_log = 1;
             }

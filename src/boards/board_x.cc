@@ -180,6 +180,8 @@ void cboard_x::WritePreferences(void) {
     PICSimLab.SavePrefs("X_clock", FloatStrFormat("%2.1f", PICSimLab.GetClock()));
     // write potentiometer position to preferences
     PICSimLab.SavePrefs("X_pot1", std::to_string(pot1));
+    PICSimLab.SavePrefs("X_PWActivePrj", GetPWActiveProject());
+    PICSimLab.SavePrefs("X_PWPrjType", GetPWProjectType());
 }
 
 // Called whe configuration file load  preferences
@@ -204,6 +206,14 @@ void cboard_x::ReadPreferences(char* name, char* value) {
     // read potentiometer position
     if (!strcmp(name, "X_pot1")) {
         pot1 = atoi(value);
+    }
+
+    if (!strcmp(name, "X_PWActivePrj")) {
+        SetPWActiveProject(value);
+    }
+
+    if (!strcmp(name, "X_PWPrjType")) {
+        SetPWProjectType(value);
     }
 }
 

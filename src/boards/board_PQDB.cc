@@ -487,15 +487,7 @@ void cboard_PQDB::Draw(void) {
         char buff[100];
         scroll1_old = position;
         vLM = (1.5 * scroll1_old / 199);
-        sprintf(buff,
-                "Te"
-                "mp"
-                ": "
-                "%4"
-                ".1"
-                "f "
-                "C",
-                scroll1_old * 150.0 / 199.0);
+        sprintf(buff, "Temp: %4.1f C", scroll1_old * 150.0 / 199.0);
         PICSimLab.UpdateGUI(TEMP, GT_SCROLL, GA_SET_LABEL, (void*)buff);
     }
 
@@ -508,17 +500,7 @@ void cboard_PQDB::Draw(void) {
         const float r10 = 20000.0;
         const float res = r10 / (powf(10, gamma * log10(lux / 10.0)));
         vLDR = (res * 3.3) / (res + 10000.0);
-        sprintf(buff,
-                "Li"
-                "gh"
-                "t:"
-                " %"
-                "4."
-                "0f"
-                " l"
-                "u"
-                "x",
-                lux);
+        sprintf(buff, "Light: %4.0f lux", lux);
         PICSimLab.UpdateGUI(LIGHT, GT_SCROLL, GA_SET_LABEL, (void*)buff);
     }
 }
@@ -1216,610 +1198,259 @@ void cboard_PQDB::EvOnShow(void) {
 }
 
 unsigned short cboard_PQDB::GetInputId(char* name) {
-    if (strcmp(name,
-               "PB"
-               "_R"
-               "S"
-               "T") == 0)
+    if (strcmp(name, "PB_RST") == 0)
         return I_RST;
-    if (strcmp(name,
-               "SW"
-               "_P"
-               "W"
-               "R") == 0)
+    if (strcmp(name, "SW_PWR") == 0)
         return I_PWR;
 
-    if (strcmp(name,
-               "PB"
-               "_T"
-               "C"
-               "1") == 0)
+    if (strcmp(name, "PB_TC1") == 0)
         return I_TC1;
-    if (strcmp(name,
-               "PB"
-               "_T"
-               "C"
-               "2") == 0)
+    if (strcmp(name, "PB_TC2") == 0)
         return I_TC2;
-    if (strcmp(name,
-               "PB"
-               "_T"
-               "C"
-               "3") == 0)
+    if (strcmp(name, "PB_TC3") == 0)
         return I_TC3;
-    if (strcmp(name,
-               "PB"
-               "_T"
-               "C"
-               "4") == 0)
+    if (strcmp(name, "PB_TC4") == 0)
         return I_TC4;
-    if (strcmp(name,
-               "PB"
-               "_T"
-               "C"
-               "5") == 0)
+    if (strcmp(name, "PB_TC5") == 0)
         return I_TC5;
-    if (strcmp(name,
-               "PB"
-               "_T"
-               "C"
-               "6") == 0)
+    if (strcmp(name, "PB_TC6") == 0)
         return I_TC6;
-    if (strcmp(name,
-               "PB"
-               "_T"
-               "C"
-               "7") == 0)
+    if (strcmp(name, "PB_TC7") == 0)
         return I_TC7;
-    if (strcmp(name,
-               "PB"
-               "_T"
-               "C"
-               "8") == 0)
+    if (strcmp(name, "PB_TC8") == 0)
         return I_TC8;
-    if (strcmp(name,
-               "PB"
-               "_T"
-               "C"
-               "9") == 0)
+    if (strcmp(name, "PB_TC9") == 0)
         return I_TC9;
-    if (strcmp(name,
-               "PB"
-               "_T"
-               "C"
-               "0") == 0)
+    if (strcmp(name, "PB_TC0") == 0)
         return I_TC0;
 
-    if (strcmp(name,
-               "PO"
-               "_"
-               "1") == 0)
+    if (strcmp(name, "PO_1") == 0)
         return I_POT;
 
-    printf(
-        "Error "
-        "input "
-        "'%s' "
-        "don't "
-        "have "
-        "a "
-        "valid "
-        "id! "
-        "\n",
-        name);
+    printf("Error input '%s' don't have a valid id! \n", name);
     return INVALID_ID;
 }
 
 unsigned short cboard_PQDB::GetOutputId(char* name) {
-    if (strcmp(name,
-               "PB"
-               "_R"
-               "S"
-               "T") == 0)
+    if (strcmp(name, "PB_RST") == 0)
         return O_RST;
 
-    if (strcmp(name,
-               "DI"
-               "SP"
-               "1") == 0)
+    if (strcmp(name, "DISP1") == 0)
         return O_DISP1;
-    if (strcmp(name,
-               "DI"
-               "SP"
-               "2") == 0)
+    if (strcmp(name, "DISP2") == 0)
         return O_DISP2;
-    if (strcmp(name,
-               "DI"
-               "SP"
-               "3") == 0)
+    if (strcmp(name, "DISP3") == 0)
         return O_DISP3;
-    if (strcmp(name,
-               "DI"
-               "SP"
-               "4") == 0)
+    if (strcmp(name, "DISP4") == 0)
         return O_DISP4;
 
-    if (strcmp(name,
-               "KP"
-               "1") == 0)
+    if (strcmp(name, "KP1") == 0)
         return O_KP1;
-    if (strcmp(name,
-               "KP"
-               "2") == 0)
+    if (strcmp(name, "KP2") == 0)
         return O_KP2;
 
-    if (strcmp(name,
-               "PW"
-               "M") == 0)
+    if (strcmp(name, "PWM") == 0)
         return O_PWM;
 
-    if (strcmp(name,
-               "LC"
-               "D_"
-               "R"
-               "S") == 0)
+    if (strcmp(name, "LCD_RS") == 0)
         return O_LCDRS;
-    if (strcmp(name,
-               "LC"
-               "D_"
-               "E"
-               "N") == 0)
+    if (strcmp(name, "LCD_EN") == 0)
         return O_LCDEN;
 
-    if (strcmp(name,
-               "SC"
-               "L") == 0)
+    if (strcmp(name, "SCL") == 0)
         return O_SCL;
-    if (strcmp(name,
-               "SD"
-               "A") == 0)
+    if (strcmp(name, "SDA") == 0)
         return O_SDA;
 
-    if (strcmp(name,
-               "T"
-               "X") == 0)
+    if (strcmp(name, "TX") == 0)
         return O_TX;
-    if (strcmp(name,
-               "R"
-               "X") == 0)
+    if (strcmp(name, "RX") == 0)
         return O_RX;
 
-    if (strcmp(name,
-               "SO"
-               "_D"
-               "0") == 0)
+    if (strcmp(name, "SO_D0") == 0)
         return O_SOD0;
-    if (strcmp(name,
-               "SO"
-               "_D"
-               "1") == 0)
+    if (strcmp(name, "SO_D1") == 0)
         return O_SOD1;
-    if (strcmp(name,
-               "SO"
-               "_D"
-               "2") == 0)
+    if (strcmp(name, "SO_D2") == 0)
         return O_SOD2;
-    if (strcmp(name,
-               "SO"
-               "_D"
-               "3") == 0)
+    if (strcmp(name, "SO_D3") == 0)
         return O_SOD3;
-    if (strcmp(name,
-               "SO"
-               "_D"
-               "4") == 0)
+    if (strcmp(name, "SO_D4") == 0)
         return O_SOD4;
-    if (strcmp(name,
-               "SO"
-               "_D"
-               "5") == 0)
+    if (strcmp(name, "SO_D5") == 0)
         return O_SOD5;
-    if (strcmp(name,
-               "SO"
-               "_D"
-               "6") == 0)
+    if (strcmp(name, "SO_D6") == 0)
         return O_SOD6;
-    if (strcmp(name,
-               "SO"
-               "_D"
-               "7") == 0)
+    if (strcmp(name, "SO_D7") == 0)
         return O_SOD7;
 
-    if (strcmp(name,
-               "SO"
-               "_D"
-               "AT"
-               "A") == 0)
+    if (strcmp(name, "SO_DATA") == 0)
         return O_SODATA;
-    if (strcmp(name,
-               "SO"
-               "_C"
-               "L"
-               "K") == 0)
+    if (strcmp(name, "SO_CLK") == 0)
         return O_SOCLK;
-    if (strcmp(name,
-               "SO"
-               "_E"
-               "N") == 0)
+    if (strcmp(name, "SO_EN") == 0)
         return O_SOEN;
 
-    if (strcmp(name,
-               "SS"
-               "_A"
-               "1") == 0)
+    if (strcmp(name, "SS_A1") == 0)
         return O_A1;
-    if (strcmp(name,
-               "SS"
-               "_B"
-               "1") == 0)
+    if (strcmp(name, "SS_B1") == 0)
         return O_B1;
-    if (strcmp(name,
-               "SS"
-               "_C"
-               "1") == 0)
+    if (strcmp(name, "SS_C1") == 0)
         return O_C1;
-    if (strcmp(name,
-               "SS"
-               "_D"
-               "1") == 0)
+    if (strcmp(name, "SS_D1") == 0)
         return O_D1;
-    if (strcmp(name,
-               "SS"
-               "_E"
-               "1") == 0)
+    if (strcmp(name, "SS_E1") == 0)
         return O_E1;
-    if (strcmp(name,
-               "SS"
-               "_F"
-               "1") == 0)
+    if (strcmp(name, "SS_F1") == 0)
         return O_F1;
-    if (strcmp(name,
-               "SS"
-               "_G"
-               "1") == 0)
+    if (strcmp(name, "SS_G1") == 0)
         return O_G1;
-    if (strcmp(name,
-               "SS"
-               "_P"
-               "1") == 0)
+    if (strcmp(name, "SS_P1") == 0)
         return O_P1;
 
-    if (strcmp(name,
-               "SS"
-               "_A"
-               "2") == 0)
+    if (strcmp(name, "SS_A2") == 0)
         return O_A2;
-    if (strcmp(name,
-               "SS"
-               "_B"
-               "2") == 0)
+    if (strcmp(name, "SS_B2") == 0)
         return O_B2;
-    if (strcmp(name,
-               "SS"
-               "_C"
-               "2") == 0)
+    if (strcmp(name, "SS_C2") == 0)
         return O_C2;
-    if (strcmp(name,
-               "SS"
-               "_D"
-               "2") == 0)
+    if (strcmp(name, "SS_D2") == 0)
         return O_D2;
-    if (strcmp(name,
-               "SS"
-               "_E"
-               "2") == 0)
+    if (strcmp(name, "SS_E2") == 0)
         return O_E2;
-    if (strcmp(name,
-               "SS"
-               "_F"
-               "2") == 0)
+    if (strcmp(name, "SS_F2") == 0)
         return O_F2;
-    if (strcmp(name,
-               "SS"
-               "_G"
-               "2") == 0)
+    if (strcmp(name, "SS_G2") == 0)
         return O_G2;
-    if (strcmp(name,
-               "SS"
-               "_P"
-               "2") == 0)
+    if (strcmp(name, "SS_P2") == 0)
         return O_P2;
 
-    if (strcmp(name,
-               "LD"
-               "_P"
-               "W"
-               "R") == 0)
+    if (strcmp(name, "LD_PWR") == 0)
         return O_LPWR;
-    if (strcmp(name,
-               "LD"
-               "_L"
-               "E"
-               "D") == 0)
+    if (strcmp(name, "LD_LED") == 0)
         return O_LED;
-    if (strcmp(name,
-               "DS"
-               "_L"
-               "C"
-               "D") == 0)
+    if (strcmp(name, "DS_LCD") == 0)
         return O_LCD;
 
-    if (strcmp(name,
-               "SS"
-               "_A"
-               "3") == 0)
+    if (strcmp(name, "SS_A3") == 0)
         return O_A3;
-    if (strcmp(name,
-               "SS"
-               "_B"
-               "3") == 0)
+    if (strcmp(name, "SS_B3") == 0)
         return O_B3;
-    if (strcmp(name,
-               "SS"
-               "_C"
-               "3") == 0)
+    if (strcmp(name, "SS_C3") == 0)
         return O_C3;
-    if (strcmp(name,
-               "SS"
-               "_D"
-               "3") == 0)
+    if (strcmp(name, "SS_D3") == 0)
         return O_D3;
-    if (strcmp(name,
-               "SS"
-               "_E"
-               "3") == 0)
+    if (strcmp(name, "SS_E3") == 0)
         return O_E3;
-    if (strcmp(name,
-               "SS"
-               "_F"
-               "3") == 0)
+    if (strcmp(name, "SS_F3") == 0)
         return O_F3;
-    if (strcmp(name,
-               "SS"
-               "_G"
-               "3") == 0)
+    if (strcmp(name, "SS_G3") == 0)
         return O_G3;
-    if (strcmp(name,
-               "SS"
-               "_P"
-               "3") == 0)
+    if (strcmp(name, "SS_P3") == 0)
         return O_P3;
 
-    if (strcmp(name,
-               "SS"
-               "_A"
-               "4") == 0)
+    if (strcmp(name, "SS_A4") == 0)
         return O_A4;
-    if (strcmp(name,
-               "SS"
-               "_B"
-               "4") == 0)
+    if (strcmp(name, "SS_B4") == 0)
         return O_B4;
-    if (strcmp(name,
-               "SS"
-               "_C"
-               "4") == 0)
+    if (strcmp(name, "SS_C4") == 0)
         return O_C4;
-    if (strcmp(name,
-               "SS"
-               "_D"
-               "4") == 0)
+    if (strcmp(name, "SS_D4") == 0)
         return O_D4;
-    if (strcmp(name,
-               "SS"
-               "_E"
-               "4") == 0)
+    if (strcmp(name, "SS_E4") == 0)
         return O_E4;
-    if (strcmp(name,
-               "SS"
-               "_F"
-               "4") == 0)
+    if (strcmp(name, "SS_F4") == 0)
         return O_F4;
-    if (strcmp(name,
-               "SS"
-               "_G"
-               "4") == 0)
+    if (strcmp(name, "SS_G4") == 0)
         return O_G4;
-    if (strcmp(name,
-               "SS"
-               "_P"
-               "4") == 0)
+    if (strcmp(name, "SS_P4") == 0)
         return O_P4;
 
-    if (strcmp(name,
-               "PB"
-               "_T"
-               "C"
-               "1") == 0)
+    if (strcmp(name, "PB_TC1") == 0)
         return O_TC1;
-    if (strcmp(name,
-               "PB"
-               "_T"
-               "C"
-               "2") == 0)
+    if (strcmp(name, "PB_TC2") == 0)
         return O_TC2;
-    if (strcmp(name,
-               "PB"
-               "_T"
-               "C"
-               "3") == 0)
+    if (strcmp(name, "PB_TC3") == 0)
         return O_TC3;
-    if (strcmp(name,
-               "PB"
-               "_T"
-               "C"
-               "4") == 0)
+    if (strcmp(name, "PB_TC4") == 0)
         return O_TC4;
-    if (strcmp(name,
-               "PB"
-               "_T"
-               "C"
-               "5") == 0)
+    if (strcmp(name, "PB_TC5") == 0)
         return O_TC5;
-    if (strcmp(name,
-               "PB"
-               "_T"
-               "C"
-               "6") == 0)
+    if (strcmp(name, "PB_TC6") == 0)
         return O_TC6;
-    if (strcmp(name,
-               "PB"
-               "_T"
-               "C"
-               "7") == 0)
+    if (strcmp(name, "PB_TC7") == 0)
         return O_TC7;
-    if (strcmp(name,
-               "PB"
-               "_T"
-               "C"
-               "8") == 0)
+    if (strcmp(name, "PB_TC8") == 0)
         return O_TC8;
-    if (strcmp(name,
-               "PB"
-               "_T"
-               "C"
-               "9") == 0)
+    if (strcmp(name, "PB_TC9") == 0)
         return O_TC9;
-    if (strcmp(name,
-               "PB"
-               "_T"
-               "C"
-               "0") == 0)
+    if (strcmp(name, "PB_TC0") == 0)
         return O_TC0;
 
-    if (strcmp(name,
-               "PO"
-               "_"
-               "1") == 0)
+    if (strcmp(name, "PO_1") == 0)
         return O_POT;
 
-    if (strcmp(name,
-               "RG"
-               "B") == 0)
+    if (strcmp(name, "RGB") == 0)
         return O_RGB;
 
-    if (strcmp(name,
-               "SS"
-               "_"
-               "1") == 0)
+    if (strcmp(name, "SS_1") == 0)
         return O_SS1;
-    if (strcmp(name,
-               "SS"
-               "_"
-               "2") == 0)
+    if (strcmp(name, "SS_2") == 0)
         return O_SS2;
-    if (strcmp(name,
-               "SS"
-               "_"
-               "3") == 0)
+    if (strcmp(name, "SS_3") == 0)
         return O_SS3;
-    if (strcmp(name,
-               "SS"
-               "_"
-               "4") == 0)
+    if (strcmp(name, "SS_4") == 0)
         return O_SS4;
 
-    if (strcmp(name,
-               "IC"
-               "_C"
-               "P"
-               "U") == 0)
+    if (strcmp(name, "IC_CPU") == 0)
         return O_MP;
 
-    printf(
-        "Error "
-        "output"
-        " '%s' "
-        "don't "
-        "have "
-        "a "
-        "valid "
-        "id! "
-        "\n",
-        name);
+    printf("Error output '%s' don't have a valid id! \n", name);
     return INVALID_ID;
 }
 
 void cboard_PQDB::WritePreferences(void) {
-    PICSimLab.SavePrefs(
-        "PQ"
-        "DB"
-        "_p"
-        "ro"
-        "c",
-        Proc);
-    PICSimLab.SavePrefs(
-        "PQDB_"
-        "clock",
-        FloatStrFormat("%2"
-                       ".1"
-                       "f",
-                       PICSimLab.GetClock()));
-    PICSimLab.SavePrefs(
-        "PQDB_"
-        "pot",
-        std::to_string(pot));
+    PICSimLab.SavePrefs("PQDB_proc", Proc);
+    PICSimLab.SavePrefs("PQDB_clock", FloatStrFormat("%2.1f", PICSimLab.GetClock()));
+    PICSimLab.SavePrefs("PQDB_pot", std::to_string(pot));
     int position = 0;
     PICSimLab.UpdateGUI(LIGHT, GT_SCROLL, GA_GET, (void*)&position);
-    PICSimLab.SavePrefs(
-        "PQDB_"
-        "light",
-        std::to_string(position));
+    PICSimLab.SavePrefs("PQDB_light", std::to_string(position));
     PICSimLab.UpdateGUI(TEMP, GT_SCROLL, GA_GET, (void*)&position);
-    PICSimLab.SavePrefs(
-        "PQDB_"
-        "temp",
-        std::to_string(position));
+    PICSimLab.SavePrefs("PQDB_temp", std::to_string(position));
+    PICSimLab.SavePrefs("PQDB_PWActivePrj", GetPWActiveProject());
+    PICSimLab.SavePrefs("PQDB_PWPrjType", GetPWProjectType());
 }
 
 void cboard_PQDB::ReadPreferences(char* name, char* value) {
-    if (!strcmp(name,
-                "PQ"
-                "DB"
-                "_p"
-                "ro"
-                "c")) {
+    if (!strcmp(name, "PQDB_proc")) {
         Proc = value;
     }
 
-    if (!strcmp(name,
-                "PQ"
-                "DB"
-                "_c"
-                "lo"
-                "c"
-                "k")) {
+    if (!strcmp(name, "PQDB_clock")) {
         PICSimLab.SetClock(atof(value));
     }
 
-    if (!strcmp(name,
-                "PQ"
-                "DB"
-                "_p"
-                "o"
-                "t")) {
+    if (!strcmp(name, "PQDB_pot")) {
         pot = atoi(value);
     }
 
-    if (!strcmp(name,
-                "PQ"
-                "DB"
-                "_l"
-                "ig"
-                "h"
-                "t")) {
+    if (!strcmp(name, "PQDB_light")) {
         int ivalue = atoi(value);
         PICSimLab.UpdateGUI(LIGHT, GT_SCROLL, GA_SET, (void*)&ivalue);
     }
 
-    if (!strcmp(name,
-                "PQ"
-                "DB"
-                "_t"
-                "em"
-                "p")) {
+    if (!strcmp(name, "PQDB_temp")) {
         int ivalue = atoi(value);
         PICSimLab.UpdateGUI(TEMP, GT_SCROLL, GA_SET, (void*)&ivalue);
+    }
+
+    if (!strcmp(name, "PQDB_PWActivePrj")) {
+        SetPWActiveProject(value);
+    }
+
+    if (!strcmp(name, "PQDB_PWPrjType")) {
+        SetPWProjectType(value);
     }
 }
 

@@ -244,6 +244,8 @@ void cboard_Curiosity_HPC::WritePreferences(void) {
     PICSimLab.UpdateGUI(SERIAL2, GT_COMBO, GA_GET, (void*)text);
     PICSimLab.SavePrefs("Curiosity_HPC_serial2", text);
     PICSimLab.SavePrefs("Curiosity_HPC_pot1", std::to_string(pot1));
+    PICSimLab.SavePrefs("Curiosity_HPC_PWActivePrj", GetPWActiveProject());
+    PICSimLab.SavePrefs("Curiosity_HPC_PWPrjType", GetPWProjectType());
 }
 
 // Called whe configuration file load  preferences
@@ -273,6 +275,14 @@ void cboard_Curiosity_HPC::ReadPreferences(char* name, char* value) {
 
     if (!strcmp(name, "Curiosity_HPC_pot1")) {
         pot1 = atoi(value);
+    }
+
+    if (!strcmp(name, "Curiosity_HPC_PWActivePrj")) {
+        SetPWActiveProject(value);
+    }
+
+    if (!strcmp(name, "Curiosity_HPC_PWPrjType")) {
+        SetPWProjectType(value);
     }
 }
 

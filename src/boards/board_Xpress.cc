@@ -168,6 +168,8 @@ void cboard_Xpress::WritePreferences(void) {
     PICSimLab.SavePrefs("Xpress_proc", Proc);
     PICSimLab.SavePrefs("Xpress_clock", FloatStrFormat("%2.1f", PICSimLab.GetClock()));
     PICSimLab.SavePrefs("Xpress_pot1", std::to_string(pot1));
+    PICSimLab.SavePrefs("Xpress_PWActivePrj", GetPWActiveProject());
+    PICSimLab.SavePrefs("Xpress_PWPrjType", GetPWProjectType());
 }
 
 // Called whe configuration file load  preferences
@@ -182,6 +184,13 @@ void cboard_Xpress::ReadPreferences(char* name, char* value) {
     }
     if (!strcmp(name, "Xpress_pot1")) {
         pot1 = atoi(value);
+    }
+    if (!strcmp(name, "Xpress_PWActivePrj")) {
+        SetPWActiveProject(value);
+    }
+
+    if (!strcmp(name, "Xpress_PWPrjType")) {
+        SetPWProjectType(value);
     }
 }
 

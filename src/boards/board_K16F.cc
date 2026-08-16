@@ -923,6 +923,8 @@ unsigned short cboard_K16F::GetOutputId(char* name) {
 void cboard_K16F::WritePreferences(void) {
     PICSimLab.SavePrefs("K16F_proc", Proc);
     PICSimLab.SavePrefs("K16F_clock", FloatStrFormat("%2.1f", PICSimLab.GetClock()));
+    PICSimLab.SavePrefs("K16F_PWActivePrj", GetPWActiveProject());
+    PICSimLab.SavePrefs("K16F_PWPrjType", GetPWProjectType());
 }
 
 void cboard_K16F::ReadPreferences(char* name, char* value) {
@@ -932,6 +934,14 @@ void cboard_K16F::ReadPreferences(char* name, char* value) {
 
     if (!strcmp(name, "K16F_clock")) {
         PICSimLab.SetClock(atof(value));
+    }
+
+    if (!strcmp(name, "K16F_PWActivePrj")) {
+        SetPWActiveProject(value);
+    }
+
+    if (!strcmp(name, "K16F_PWPrjType")) {
+        SetPWProjectType(value);
     }
 }
 

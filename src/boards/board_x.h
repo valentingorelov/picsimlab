@@ -61,6 +61,8 @@ public:
     void Run_CPU(void) override;
     // Return a list of board supported microcontrollers
     std::string GetSupportedDevices(void) override { return "PIC16F877A,PIC18F4550,PIC18F4620,"; };
+    // Return a list of supported IDEs in project wizard
+    std::string GetSupportedIDEs(void) override { return "MPLAB X IDE,"; };
     // Reset board status
     void Reset(void) override;
     // Event on the board

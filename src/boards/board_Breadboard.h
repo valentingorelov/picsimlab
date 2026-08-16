@@ -109,6 +109,8 @@ public:
                "PIC18F4520,PIC18F4550,PIC18F45K50,PIC18F4580,PIC18F4620,PIC18F46J50,PIC18F47K40,PIC18F67J60,"
                "PIC18F67J94,";
     };
+    // Return a list of supported IDEs in project wizard
+    std::string GetSupportedIDEs(void) override { return "MPLAB X IDE,"; };
     // Reset board status
     void Reset(void) override;
     // Event on the board

@@ -130,6 +130,37 @@ static const char blink_mplabx[] =
     "    }\n"
     "}\n";
 
+static const char blink_mplabx_avr[] =
+    "/*\n"
+    "  Simple example to blinking an LED using MPLAB X IDE.\n"
+    "   To upload to PICSimLab:\n"
+    "     1- Check if PICSimLab is running;\n"
+    "     2- Toggle the PICSimLab Debug button;\n"
+    "     3- Use the menu [Debug > Debug Project] in MPLABX IDE.\n"
+    "\n"
+    "Note: If you encounter problems with the transfer or debugging process,\n"
+    "use the [Debug > Disconnect from debug tool] menu, then turn off and on \n"
+    "the Debug button in PICSimLab, and try step 3 again.\n"
+    " */\n"
+    "\n"
+    "#define F_CPU 8000000UL\n"
+    "\n"
+    "#include <xc.h>\n"
+    "#include <util/delay.h>\n"
+    "\n"
+    "int main(void) {\n"
+    "\n"
+    "    DDRB |= (1 << PB0);\n"
+    "\n"
+    "    while (1) {\n"
+    "        PORTB |= (1 << PB0);\n"
+    "        _delay_ms(500);\n"
+    "        PORTB &= ~(1 << PB0);\n"
+    "        _delay_ms(500);\n"
+    "    }\n"
+    "}\n"
+    "\n";
+
 static const char blink_mplabx_freertos[] =
     "/*\n"
     "  Simple example to blinking an LED using MPLAB X IDE.\n"

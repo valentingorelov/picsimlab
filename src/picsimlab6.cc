@@ -585,6 +585,63 @@ int CPWindow6::CreateProject(const std::string ide, const std::string framework,
                     mplabx_tris = "TRISBbits.TRISB0";
                     mplabx_pin = "PORTBbits.RB0";
                     mplabx_freq = "4000000L";
+                } else if (!board.compare("K16F")) {
+                    mplabx_cfg = "#pragma config WDTE = OFF";
+                    mplabx_tris = "TRISAbits.TRISA1";
+                    mplabx_pin = "PORTAbits.RA1";
+                    mplabx_freq = "4000000L";
+                } else if (!board.compare("Curiosity")) {
+                    mplabx_cfg = "#pragma config WDTE = OFF";
+                    mplabx_tris = "TRISCbits.TRISC5";
+                    mplabx_pin = "PORTCbits.RC5";
+                    mplabx_freq = "8000000L";
+                } else if (!board.compare("Curiosity HPC")) {
+                    mplabx_cfg = "#pragma config WDTE = OFF";
+                    mplabx_tris = "TRISAbits.TRISA7";
+                    mplabx_pin = "PORTAbits.RA7";
+                    mplabx_freq = "8000000L";
+                } else if (!board.compare("Xpress")) {
+                    mplabx_cfg = "#pragma config WDTE = OFF";
+                    mplabx_tris = "TRISAbits.TRISA0";
+                    mplabx_pin = "PORTAbits.RA0";
+                    mplabx_freq = "8000000L";
+                } else if (!board.compare("PQDB")) {
+                    mplabx_cfg = "#pragma config WDT = OFF";
+                    mplabx_tris = "TRISAbits.TRISA5";
+                    mplabx_pin = "LATAbits.LA5";
+                    mplabx_freq = "8000000L";
+                } else if (!board.compare("X")) {
+                    if (strstr(processor.c_str(), "PIC18F")) {
+                        mplabx_cfg = "#pragma config WDT = OFF";
+                        mplabx_tris = "TRISBbits.TRISB0";
+                        mplabx_pin = "LATBbits.LB0";
+                    } else {
+                        mplabx_cfg = "#pragma config WDTE = OFF";
+                        mplabx_tris = "TRISBbits.TRISB0";
+                        mplabx_pin = "PORTBbits.RB0";
+                    }
+                    mplabx_freq = "8000000L";
+                } else if (!board.compare("Breadboard")) {
+                    if (strstr(processor.c_str(), "PIC")) {
+                        if (strstr(processor.c_str(), "PIC18F")) {
+                            if (!processor.compare("PIC18F45K50")) {
+                                mplabx_cfg = "#pragma config WDTEN = OFF";
+                            } else if (!processor.compare("PIC18F47K40")) {
+                                mplabx_cfg = "#pragma config WDTE = OFF";
+                            } else {
+                                mplabx_cfg = "#pragma config WDT = OFF";
+                            }
+                            mplabx_tris = "TRISBbits.TRISB0";
+                            mplabx_pin = "LATBbits.LB0";
+                        } else {
+                            mplabx_cfg = "#pragma config WDTE = OFF";
+                            mplabx_tris = "TRISBbits.TRISB0";
+                            mplabx_pin = "PORTBbits.RB0";
+                        }
+                    } else {
+                        // avr blink has not configuration yet
+                    }
+                    mplabx_freq = "8000000L";
                 } else {
                     PICSimLab.RegisterError("PICSimLab", (const char*)("Not supported board: " + board).c_str());
                     PICSimLab.SystemCmd(PSC_REMOVEDIR, (const char*)prjdir.utf8_str());
@@ -607,9 +664,13 @@ int CPWindow6::CreateProject(const std::string ide, const std::string framework,
                 } else if (!ctemplate.compare("Blink PICGenios")) {
                     fprintf(fmain, blink_mplabx_picgenios);
                 } else {
-                    fprintf(fmain, blink_mplabx, (const char*)mplabx_cfg.c_str(), (const char*)mplabx_freq.c_str(),
-                            (const char*)mplabx_tris.c_str(), (const char*)mplabx_pin.c_str(),
-                            (const char*)mplabx_pin.c_str());
+                    if (strstr(processor.c_str(), "PIC")) {
+                        fprintf(fmain, blink_mplabx, (const char*)mplabx_cfg.c_str(), (const char*)mplabx_freq.c_str(),
+                                (const char*)mplabx_tris.c_str(), (const char*)mplabx_pin.c_str(),
+                                (const char*)mplabx_pin.c_str());
+                    } else {
+                        fprintf(fmain, blink_mplabx_avr);
+                    }
                 }
                 fclose(fmain);
 

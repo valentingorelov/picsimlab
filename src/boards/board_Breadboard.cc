@@ -140,6 +140,8 @@ void cboard_Breadboard::WritePreferences(void) {
     PICSimLab.SavePrefs("Breadboard_proc", Proc);
     PICSimLab.SavePrefs("Breadboard_clock", FloatStrFormat("%2.1f", PICSimLab.GetClock()));
     PICSimLab.SavePrefs("Breadboard_jmp", std::to_string(jmp[0]));
+    PICSimLab.SavePrefs("Breadboard_PWActivePrj", GetPWActiveProject());
+    PICSimLab.SavePrefs("Breadboard_PWPrjType", GetPWProjectType());
 }
 
 // Called whe configuration file load  preferences
@@ -160,6 +162,14 @@ void cboard_Breadboard::ReadPreferences(char* name, char* value) {
             else
                 jmp[i] = 1;
         }
+    }
+
+    if (!strcmp(name, "Breadboard_PWActivePrj")) {
+        SetPWActiveProject(value);
+    }
+
+    if (!strcmp(name, "Breadboard_PWPrjType")) {
+        SetPWProjectType(value);
     }
 }
 

@@ -61,6 +61,8 @@ public:
     void Draw(void) override;
     void Run_CPU(void) override;
     std::string GetSupportedDevices(void) override { return "PIC16F628A,PIC16F648A,PIC16F84A,"; };
+    // Return a list of supported IDEs in project wizard
+    std::string GetSupportedIDEs(void) override { return "MPLAB X IDE,"; };
     int MInit(const char* processor, const char* fname, float freq) override;
     void Reset(void) override;
     int MDumpMemory(const char* mfname) override;

@@ -181,6 +181,8 @@ void cboard_Curiosity::WritePreferences(void) {
     PICSimLab.SavePrefs("Curiosity_jmp", std::to_string(jmp[0]));
     PICSimLab.SavePrefs("Curiosity_clock", FloatStrFormat("%2.1f", PICSimLab.GetClock()));
     PICSimLab.SavePrefs("Curiosity_pot1", std::to_string(pot1));
+    PICSimLab.SavePrefs("Curiosity_PWActivePrj", GetPWActiveProject());
+    PICSimLab.SavePrefs("Curiosity_PWPrjType", GetPWProjectType());
 }
 
 // Called whe configuration file load  preferences
@@ -207,6 +209,14 @@ void cboard_Curiosity::ReadPreferences(char* name, char* value) {
 
     if (!strcmp(name, "Curiosity_pot1")) {
         pot1 = atoi(value);
+    }
+
+    if (!strcmp(name, "Curiosity_PWActivePrj")) {
+        SetPWActiveProject(value);
+    }
+
+    if (!strcmp(name, "Curiosity_PWPrjType")) {
+        SetPWProjectType(value);
     }
 }
 

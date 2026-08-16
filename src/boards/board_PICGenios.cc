@@ -1716,18 +1716,11 @@ void cboard_PICGenios::EvMouseButtonPress(unsigned int button, unsigned int x, u
                     fout = fopen_UTF8(mi2c_tmp_name, "w");
                     if (fout) {
                         for (unsigned int i = 0; i < mi2c.SIZE; i += 16) {
-                            fprintf(fout,
-                                    "%0"
-                                    "4X"
-                                    ":"
-                                    " ",
-                                    i);
+                            fprintf(fout, "%04X: ", i);
                             for (int j = 0; j < 16; j++) {
                                 fprintf(fout, "%02X ", mi2c.data[j + i]);
                             }
-                            fprintf(fout,
-                                    "\r"
-                                    "\n");
+                            fprintf(fout, "\r\n");
                         }
                         fclose(fout);
 #ifdef __EMSCRIPTEN__
@@ -1755,13 +1748,7 @@ void cboard_PICGenios::EvMouseButtonPress(unsigned int button, unsigned int x, u
                         PICSimLab.SystemCmd(PSC_LAUNCHDEFAULAPPLICATION, mi2c_tmp_name);
 #endif
                     } else {
-                        printf(
-                            "Error "
-                            "saving"
-                            " to "
-                            "file: "
-                            "%s \n",
-                            mi2c_tmp_name);
+                        printf("Error saving to file: %s \n", mi2c_tmp_name);
                     }
                     break;
             }
@@ -2055,9 +2042,7 @@ unsigned short cboard_PICGenios::GetInputId(char* name) {
         return I_RST;
     if (strcmp(name, "SW_PWR") == 0)
         return I_PWR;
-    if (strcmp(name,
-               "PG_"
-               "ICSP") == 0)
+    if (strcmp(name, "PG_ICSP") == 0)
         return I_ICSP;
 
     if (strcmp(name, "PB_RB0") == 0)
@@ -2143,9 +2128,7 @@ unsigned short cboard_PICGenios::GetInputId(char* name) {
 
     if (strcmp(name, "JP_1") == 0)
         return I_JP1;
-    if (strcmp(name,
-               "MD_"
-               "VIEW") == 0)
+    if (strcmp(name, "MD_VIEW") == 0)
         return I_VIEW;
 
     if (strcmp(name, "PO_1") == 0)
@@ -2153,12 +2136,7 @@ unsigned short cboard_PICGenios::GetInputId(char* name) {
     if (strcmp(name, "PO_2") == 0)
         return I_POT2;
 
-    printf(
-        "Error input "
-        "'%s' don't "
-        "have a valid "
-        "id! \n",
-        name);
+    printf("Error input '%s' don't have a valid id! \n", name);
     return INVALID_ID;
 }
 
@@ -2386,12 +2364,7 @@ unsigned short cboard_PICGenios::GetOutputId(char* name) {
     if (strcmp(name, "IC_CPU") == 0)
         return O_MP;
 
-    printf(
-        "Error output "
-        "'%s' don't "
-        "have a valid "
-        "id! \n",
-        name);
+    printf("Error output '%s' don't have a valid id! \n", name);
     return INVALID_ID;
 }
 
@@ -2490,24 +2463,16 @@ void cboard_PICGenios::board_Event(const char* controlname) {
     char text[128] = "";
     PICSimLab.UpdateGUI(LCD_TYPE, GT_COMBO, GA_GET, (void*)text);
 
-    if (strcmp(text,
-               "hd44780 "
-               "16x2") == 0) {
+    if (strcmp(text, "hd44780 16x2") == 0) {
         lcd_end(&lcd);
         lcd_init(&lcd, 16, 2, this);
-    } else if (strcmp(text,
-                      "hd44780 "
-                      "16x4") == 0) {
+    } else if (strcmp(text, "hd44780 16x4") == 0) {
         lcd_end(&lcd);
         lcd_init(&lcd, 16, 4, this);
-    } else if (strcmp(text,
-                      "hd44780 "
-                      "20x2") == 0) {
+    } else if (strcmp(text, "hd44780 20x2") == 0) {
         lcd_end(&lcd);
         lcd_init(&lcd, 20, 2, this);
-    } else if (strcmp(text,
-                      "hd44780 "
-                      "20x4") == 0) {
+    } else if (strcmp(text, "hd44780 20x4") == 0) {
         lcd_end(&lcd);
         lcd_init(&lcd, 20, 4, this);
     }

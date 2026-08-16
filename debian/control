@@ -4,7 +4,7 @@ Priority: extra
 Maintainer: Luis Claudio Gamboa Lopes <lcgamboa@yahoo.com>
 Build-Depends: debhelper (>= 7)
 Standards-Version: 3.7.3
-Homepage: https://lcgamboa.github/picsimlab
+Homepage: https://github.com/lcgamboa/picsimlab
 
 Package: picsimlab
 Architecture: any

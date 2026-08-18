@@ -1,9 +1,10 @@
 name: Release setup
 
 on:
-  push:
-    branches:
-      - '*'
+  workflow_dispatch:
+  # push:
+  #   branches:
+  #     - '*'
 
 jobs:
   release-setup:

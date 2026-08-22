@@ -261,6 +261,8 @@ unsigned int bsim_picsim::DBGGetRAMSize(void) {
 unsigned int bsim_picsim::DBGGetROMSize(void) {
     if (pic.processor == getprocbyname("PIC18F46J50")) {
         return (pic.ROMSIZE - 4) * 2;  // anomalous size!!!
+    } else if (pic.processor == getprocbyname("PIC18F67J60")) {
+        return (pic.ROMSIZE - 4) * 2;  // anomalous size!!!
     } else if (pic.processor == getprocbyname("PIC18F67J94")) {
         return (pic.ROMSIZE - 8) * 2;  // anomalous size!!!
     } else {

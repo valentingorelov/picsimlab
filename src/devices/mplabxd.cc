@@ -239,7 +239,7 @@ int mplabxd_testbp(void) {
     if (!PICSimLab.GetMcuDbg()) {
         for (i = 0; i < bpc; i++) {
             if (dbg_board->DBGGetPC() == bp[i]) {
-                dprint("breakpoint 0x%04X!!!!!=========================\n", bp[i]);
+                dprint("mplabxd: breakpoint 0x%04X!!!!!=========================\n", bp[i]);
                 PICSimLab.SetCpuState(CPU_BREAKPOINT);
                 PICSimLab.Set_mcudbg(1);
                 return PICSimLab.GetMcuDbg();
@@ -247,7 +247,7 @@ int mplabxd_testbp(void) {
         }
         for (i = 0; i < bpdwc; i++) {
             if (dbg_board->DBGGetRAMLAWR() == bpdw[i]) {
-                dprint("breakpoint data wr 0x%04X!!!!!=========================\n", bpdw[i]);
+                dprint("mplabxd: breakpoint data wr 0x%04X!!!!!=========================\n", bpdw[i]);
                 PICSimLab.SetCpuState(CPU_BREAKPOINT);
                 PICSimLab.Set_mcudbg(1);
                 return PICSimLab.GetMcuDbg();
@@ -255,7 +255,7 @@ int mplabxd_testbp(void) {
         }
         for (i = 0; i < bpdrc; i++) {
             if (dbg_board->DBGGetRAMLARD() == bpdr[i]) {
-                dprint("breakpoint data rd 0x%04X!!!!!=========================\n", bpdr[i]);
+                dprint("mplabxd: breakpoint data rd 0x%04X!!!!!=========================\n", bpdr[i]);
                 PICSimLab.SetCpuState(CPU_BREAKPOINT);
                 PICSimLab.Set_mcudbg(1);
                 return PICSimLab.GetMcuDbg();
@@ -296,11 +296,11 @@ int mplabxd_loop(void) {
 
         switch (cmd) {
             case STARTD:
-                dprint("STARTD cmd ----------------------\n");
+                dprint("mplabxd: STARTD cmd ----------------------\n");
                 PICSimLab.Set_mcudbg(1);
                 break;
             case STOPD:
-                dprint("STOPD cmd -----------------------\n");
+                dprint("mplabxd: STOPD cmd -----------------------\n");
                 ret = 1;
                 PICSimLab.Set_mcudbg(0);
                 PICSimLab.SetCpuState(CPU_RUNNING);
@@ -309,32 +309,32 @@ int mplabxd_loop(void) {
                 bpdrc = 0;
                 break;
             case STEP:
-                dprint("STEP cmd\n");
+                dprint("mplabxd: STEP cmd\n");
                 dbg_board->MStep();
                 PICSimLab.SetCpuState(CPU_STEPPING);
                 break;
             case RESET:
                 PICSimLab.Set_mcudbg(1);
-                dprint("RESET cmd\n");
+                dprint("mplabxd: RESET cmd\n");
                 dbg_board->MStepResume();
                 dbg_board->MReset(1);
                 dbg_board->MStep();
                 break;
             case RUN:
                 PICSimLab.Set_mcudbg(0);
-                dprint("RUN cmd\n");
+                dprint("mplabxd: RUN cmd\n");
                 dbg_board->MStep();  // to go out break point
                 PICSimLab.SetCpuState(CPU_RUNNING);
                 break;
             case HALT:
                 PICSimLab.Set_mcudbg(1);
                 dbg_board->MStepResume();
-                dprint("HALT cmd\n");
+                dprint("mplabxd: HALT cmd\n");
                 PICSimLab.SetCpuState(CPU_HALTED);
                 break;
             case GETPC:
                 pc = dbg_board->DBGGetPC();
-                dprint("GETPC %04Xcmd\n", pc);
+                dprint("mplabxd: GETPC %04Xcmd\n", pc);
                 if (send(sockfd, (char*)&pc, 4, MSG_NOSIGNAL) != 4) {
                     printf("mplabxd: send error : %s \n", strerror(errno));
                     ret = 1;
@@ -348,7 +348,7 @@ int mplabxd_loop(void) {
                     reply = 0x01;
                 }
                 dbg_board->DBGSetPC(pc);
-                dprint("SETPC cmd\n");
+                dprint("mplabxd:SETPC cmd\n");
                 break;
             case SETBK:
                 if ((n = recv(sockfd, (char*)&bpc, 2, MSG_WAITALL)) != 2) {
@@ -356,7 +356,7 @@ int mplabxd_loop(void) {
                     ret = 1;
                     reply = 0x01;
                 }
-                dprint("bp count =%i\n", bpc);
+                dprint("mplabxd: bp count =%i\n", bpc);
                 if (bpc >= 100)
                     bpc = 100;
                 if (bpc > 0) {
@@ -370,7 +370,7 @@ int mplabxd_loop(void) {
                         printf("bp %i = %#06X\n", i, bp[i]);
 #endif
                 }
-                dprint("SETBK cmd\n");
+                dprint("mplabxd: SETBK cmd\n");
                 break;
             case STRUN:
                 i = PICSimLab.GetMcuDbg();
@@ -379,7 +379,7 @@ int mplabxd_loop(void) {
                     ret = 1;
                     reply = 0x01;
                 }
-                dprint("STRUN cmd =%i\n", PICSimLab.GetMcuDbg());
+                dprint("mplabxd: STRUN cmd =%i\n", PICSimLab.GetMcuDbg());
                 break;
             case SDWBK:
                 if ((n = recv(sockfd, (char*)&bpdwc, 2, MSG_WAITALL)) != 2) {
@@ -387,7 +387,7 @@ int mplabxd_loop(void) {
                     ret = 1;
                     reply = 0x01;
                 }
-                dprint("bpdw count =%i\n", bpdwc);
+                dprint("mplabxd: bpdw count =%i\n", bpdwc);
                 if (bpdwc >= 100)
                     bpdwc = 100;
                 if (bpdwc > 0) {
@@ -409,7 +409,7 @@ int mplabxd_loop(void) {
                     ret = 1;
                     reply = 0x01;
                 }
-                dprint("bpdr count =%i\n", bpdrc);
+                dprint("mplabxd: bpdr count =%i\n", bpdrc);
                 if (bpdrc >= 100)
                     bpdrc = 100;
                 if (bpdrc > 0) {
@@ -423,10 +423,10 @@ int mplabxd_loop(void) {
                         printf("bpdr %i = %#06X\n", i, bpdr[i]);
 #endif
                 }
-                dprint("SDRBK cmd\n");
+                dprint("mplabxd: SDRBK cmd\n");
                 break;
             case GETID:
-                dprint("GETID cmd\n");
+                dprint("mplabxd: GETID cmd\n");
                 if (send(sockfd, (char*)dbg_board->DBGGetProcID_p(), 2, MSG_NOSIGNAL) != 2) {
                     printf("mplabxd: send error : %s \n", strerror(errno));
                     ret = 1;
@@ -434,7 +434,7 @@ int mplabxd_loop(void) {
                 }
                 break;
             case GETNAM:
-                dprint("GETNAM cmd\n");
+                dprint("mplabxd: GETNAM cmd\n");
                 char buff[20];
                 buff[0] = dbg_board->GetProcessorName().length();
                 strncpy(buff + 1, (const char*)dbg_board->GetProcessorName().c_str(), 18);
@@ -451,7 +451,7 @@ int mplabxd_loop(void) {
                     ret = 1;
                     reply = 0x01;
                 }
-                dprint("PROGD cmd\n");
+                dprint("mplabxd: PROGD cmd\n");
                 uram = dbg_board->DBGGetRAM_p();
                 for (i = 0; i < (int)dbg_board->DBGGetRAMSize(); i++) {
                     if (ramsend[i] != ramreceived[i]) {
@@ -471,7 +471,7 @@ int mplabxd_loop(void) {
                 for (i = 0; i < (int)dbg_board->DBGGetROMSize(); i++)
                     printf("%#02X ", dbg_board->DBGGetROM_p()[i]);
 #endif
-                dprint("PROGP cmd  %i of %i\n", n, dbg_board->DBGGetROMSize());
+                dprint("mplabxd: PROGP cmd  %i of %i\n", n, dbg_board->DBGGetROMSize());
                 break;
             case PROGC:
                 if ((n = recv(sockfd, (char*)dbg_board->DBGGetCONFIG_p(), dbg_board->DBGGetCONFIGSize(),
@@ -484,7 +484,7 @@ int mplabxd_loop(void) {
                 for (i = 0; i < (int)dbg_board->DBGGetCONFIGSize(); i++)
                     printf("%#02X ", dbg_board->DBGGetCONFIG_p()[i]);
 #endif
-                dprint("PROGC cmd  %i of %i\n", n, dbg_board->DBGGetCONFIGSize());
+                dprint("mplabxd: PROGC cmd  %i of %i\n", n, dbg_board->DBGGetCONFIGSize());
                 break;
             case PROGI:
                 if ((n = recv(sockfd, (char*)dbg_board->DBGGetID_p(), dbg_board->DBGGetIDSize(), MSG_WAITALL)) !=
@@ -497,7 +497,7 @@ int mplabxd_loop(void) {
                 for (i = 0; i < (int)dbg_board->DBGGetIDSize(); i++)
                     printf("%#02X ", dbg_board->DBGGetID_p()[i]);
 #endif
-                dprint("PROGI cmd\n");
+                dprint("mplabxd: PROGI cmd\n");
                 break;
             case PROGE:
                 if ((n = recv(sockfd, (char*)dbg_board->DBGGetEEPROM_p(), dbg_board->DBGGetEEPROM_Size(),
@@ -510,7 +510,7 @@ int mplabxd_loop(void) {
                 for (i = 0; i < (int)dbg_board->DBGGetEEPROM_Size(); i++)
                     printf("%#02X ", dbg_board->DBGGetEEPROM_p()[i]);
 #endif
-                dprint("PROGE cmd\n");
+                dprint("mplabxd: PROGE cmd\n");
                 break;
             case READD:
                 memcpy(ramsend, dbg_board->DBGGetRAM_p(), dbg_board->DBGGetRAMSize());
@@ -520,7 +520,7 @@ int mplabxd_loop(void) {
                     ret = 1;
                     reply = 0x01;
                 }
-                dprint("READD cmd  size=0x%04X, ret= %i\n", dbg_board->DBGGetRAMSize(), ret);
+                dprint("mplabxd: READD cmd  size=0x%04X, ret= %i\n", dbg_board->DBGGetRAMSize(), ret);
                 break;
             case READDV:
                 if ((n = recv(sockfd, (char*)&dbuff, 4, MSG_WAITALL)) != 4) {
@@ -534,7 +534,7 @@ int mplabxd_loop(void) {
                     ret = 1;
                     reply = 0x01;
                 }
-                dprint("READDV cmd\n");
+                dprint("mplabxd: READDV cmd\n");
                 break;
             case READP:
                 if (send(sockfd, (const char*)dbg_board->DBGGetROM_p(), dbg_board->DBGGetROMSize(), MSG_NOSIGNAL) !=
@@ -543,7 +543,7 @@ int mplabxd_loop(void) {
                     ret = 1;
                     reply = 0x01;
                 }
-                dprint("READP cmd\n");
+                dprint("mplabxd: READP cmd\n");
                 break;
             case READC:
                 if (send(sockfd, (const char*)dbg_board->DBGGetCONFIG_p(), dbg_board->DBGGetCONFIGSize(),
@@ -552,7 +552,7 @@ int mplabxd_loop(void) {
                     ret = 1;
                     reply = 0x01;
                 }
-                dprint("READC cmd\n");
+                dprint("mplabxd: READC cmd\n");
                 break;
             case READI:
                 if (send(sockfd, (char*)dbg_board->DBGGetID_p(), dbg_board->DBGGetIDSize(), MSG_NOSIGNAL) !=
@@ -561,7 +561,7 @@ int mplabxd_loop(void) {
                     ret = 1;
                     reply = 0x01;
                 }
-                dprint("READI cmd\n");
+                dprint("mplabxd: READI cmd\n");
                 break;
             case READE:
                 if (send(sockfd, (char*)dbg_board->DBGGetEEPROM_p(), dbg_board->DBGGetEEPROM_Size(), MSG_NOSIGNAL) !=
@@ -570,10 +570,10 @@ int mplabxd_loop(void) {
                     ret = 1;
                     reply = 0x01;
                 };
-                dprint("READI cmd\n");
+                dprint("mplabxd: READI cmd\n");
                 break;
             default:
-                dprint("UNKNOWN cmd !!!!!!!!!!!!!\n");
+                dprint("mplabxd: UNKNOWN cmd !!!!!!!!!!!!!\n");
                 break;
         }
 

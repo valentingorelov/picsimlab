@@ -729,11 +729,16 @@ int rcontrol_loop(void) {
                         }
                         break;
                     case 'e':
-                        if (!strcmp(cmd, "exit")) {
+                        if (!strncmp(cmd, "exit", 4)) {
                             // Command exit
                             // ========================================================
                             // sendtext(client_id, "Ok\r\n>");
                             // Resume simulation if stopped, so timer2 can process the destroy
+                            if (strlen(cmd) > 4) {
+                                int dbg;
+                                sscanf(cmd + 4, "%i", &dbg);
+                                PICSimLab.SetDebugStatus((dbg ? 1 : 0));
+                            }
                             PICSimLab.SetSimulationRun(1);
                             PICSimLab.SetWorkspaceFileName("");
                             PICSimLab.SetToDestroy();
@@ -906,7 +911,8 @@ int rcontrol_loop(void) {
                             ret += sendtext(client_id, "  dumpf [addr] [count]                - dump Flash memory\r\n");
                             ret += sendtext(client_id, "  dumpr [addr] [count]                - dump RAM memory\r\n");
                             ret +=
-                                sendtext(client_id, "  exit                                - shutdown PICSimLab\r\n");
+                                sendtext(client_id,
+                                         "  exit [0/1]                          - shutdown PICSimLab [dbg on/off]\r\n");
                             ret += sendtext(client_id, "  get obj                             - get object value\r\n");
                             ret += sendtext(client_id, "  help                                - show this message\r\n");
                             ret +=

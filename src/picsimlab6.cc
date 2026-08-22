@@ -530,7 +530,7 @@ int CPWindow6::CreateProject(const std::string ide, const std::string framework,
                     strncpy(prj_name, strrchr(prjdir.utf8_str(), '/'), 511);
                 } else {
                     char stmp[512];
-                    strncpy(stmp, prjdir.utf8_str(), 512);
+                    strncpy(stmp, prjdir.utf8_str(), 511);
                     stmp[strlen(stmp) - 1] = 0;
                     strncpy(prj_name, strrchr(stmp, '/') + 1, 511);
                 }
@@ -550,16 +550,22 @@ int CPWindow6::CreateProject(const std::string ide, const std::string framework,
                     if (strstr(processor.c_str(), "PIC18F")) {
                         if (!processor.compare("PIC18F45K50")) {
                             mplabx_cfg = "#pragma config WDTEN = OFF";
+                            mplabx_tris = "ANSELDbits.ANSD3 = 0;\n    TRISDbits.TRISD0";
                         } else if (!processor.compare("PIC18F47K40")) {
                             mplabx_cfg = "#pragma config WDTE = OFF";
+                            mplabx_tris = "ANSELDbits.ANSELD0 = 0;\n    TRISDbits.TRISD0";
                         } else {
                             mplabx_cfg = "#pragma config WDT = OFF";
+                            mplabx_tris = "ADCON1 |= 0x0F;\n    TRISDbits.TRISD0";
                         }
-                        mplabx_tris = "TRISDbits.TRISD0";
                         mplabx_pin = "LATDbits.LD0";
                     } else {
                         mplabx_cfg = "#pragma config WDTE = OFF";
-                        mplabx_tris = "TRISDbits.TRISD0";
+                        if (!processor.compare("PIC16F1789") || !processor.compare("PIC16F1939")) {
+                            mplabx_tris = "ANSELDbits.ANSD0 = 0;\n    TRISDbits.TRISD0";
+                        } else {
+                            mplabx_tris = "ADCON1 |= 0x0F;\n    TRISDbits.TRISD0";
+                        }
                         mplabx_pin = "PORTDbits.RD0";
                     }
                     mplabx_freq = "8000000L";
@@ -567,16 +573,22 @@ int CPWindow6::CreateProject(const std::string ide, const std::string framework,
                     if (strstr(processor.c_str(), "PIC18F")) {
                         if (!processor.compare("PIC18F45K50")) {
                             mplabx_cfg = "#pragma config WDTEN = OFF";
+                            mplabx_tris = "ANSELBbits.ANSB3 = 0;\n    TRISBbits.TRISB3";
                         } else if (!processor.compare("PIC18F47K40")) {
                             mplabx_cfg = "#pragma config WDTE = OFF";
+                            mplabx_tris = "ANSELBbits.ANSELB3 = 0;\n    TRISBbits.TRISB3";
                         } else {
                             mplabx_cfg = "#pragma config WDT = OFF";
+                            mplabx_tris = "ADCON1 |= 0x0F;\n    TRISBbits.TRISB3";
                         }
-                        mplabx_tris = "TRISBbits.TRISB3";
                         mplabx_pin = "LATBbits.LB3";
                     } else {
                         mplabx_cfg = "#pragma config WDTE = OFF";
-                        mplabx_tris = "TRISBbits.TRISB3";
+                        if (!processor.compare("PIC16F1789") || !processor.compare("PIC16F1939")) {
+                            mplabx_tris = "ANSELBbits.ANSB3 = 0;\n    TRISBbits.TRISB3";
+                        } else {
+                            mplabx_tris = "ADCON1 |= 0x0F;\n    TRISBbits.TRISB3";
+                        }
                         mplabx_pin = "PORTBbits.RB3";
                     }
                     mplabx_freq = "8000000L";
@@ -597,23 +609,23 @@ int CPWindow6::CreateProject(const std::string ide, const std::string framework,
                     mplabx_freq = "8000000L";
                 } else if (!board.compare("Curiosity HPC")) {
                     mplabx_cfg = "#pragma config WDTE = OFF";
-                    mplabx_tris = "TRISAbits.TRISA7";
+                    mplabx_tris = "ANSELAbits.ANSELA7 = 0;\nTRISAbits.TRISA7";
                     mplabx_pin = "PORTAbits.RA7";
                     mplabx_freq = "8000000L";
                 } else if (!board.compare("Xpress")) {
                     mplabx_cfg = "#pragma config WDTE = OFF";
-                    mplabx_tris = "TRISAbits.TRISA0";
+                    mplabx_tris = "ANSELAbits.ANSA0 = 0;\nTRISAbits.TRISA0";
                     mplabx_pin = "PORTAbits.RA0";
                     mplabx_freq = "8000000L";
                 } else if (!board.compare("PQDB")) {
                     mplabx_cfg = "#pragma config WDT = OFF";
-                    mplabx_tris = "TRISAbits.TRISA5";
+                    mplabx_tris = "ADCON1 |= 0x0F;\nTRISAbits.TRISA5";
                     mplabx_pin = "LATAbits.LA5";
                     mplabx_freq = "8000000L";
                 } else if (!board.compare("X")) {
                     if (strstr(processor.c_str(), "PIC18F")) {
                         mplabx_cfg = "#pragma config WDT = OFF";
-                        mplabx_tris = "TRISBbits.TRISB0";
+                        mplabx_tris = "ADCON1 |= 0x0F;\n    TRISBbits.TRISB0";
                         mplabx_pin = "LATBbits.LB0";
                     } else {
                         mplabx_cfg = "#pragma config WDTE = OFF";
@@ -624,19 +636,39 @@ int CPWindow6::CreateProject(const std::string ide, const std::string framework,
                 } else if (!board.compare("Breadboard")) {
                     if (strstr(processor.c_str(), "PIC")) {
                         if (strstr(processor.c_str(), "PIC18F")) {
-                            if (!processor.compare("PIC18F45K50")) {
-                                mplabx_cfg = "#pragma config WDTEN = OFF";
-                            } else if (!processor.compare("PIC18F47K40")) {
-                                mplabx_cfg = "#pragma config WDTE = OFF";
-                            } else {
+                            if (!processor.compare("PIC18F45K50") || !processor.compare("PIC18F26K80") ||
+                                !processor.compare("PIC18F46J50") || !processor.compare("PIC18F67J94")) {
+                                mplabx_cfg = "#pragma config WDTEN = OFF\n#pragma config XINST = OFF";
+                                mplabx_tris = "TRISCbits.TRISC0";
+                            } else if (!processor.compare("PIC18F47K40") || !processor.compare("PIC18F24Q10") ||
+                                       !processor.compare("PIC18F27K40")) {
+                                mplabx_cfg = "#pragma config WDTE = OFF\n#pragma config XINST = OFF";
+                                mplabx_tris = "ANSELCbits.ANSELC0 = 0;\nTRISCbits.TRISC0";
+                            } else if (!processor.compare("PIC18F452")) {
                                 mplabx_cfg = "#pragma config WDT = OFF";
+                                mplabx_tris = "TRISCbits.TRISC0";
+                            } else {
+                                mplabx_cfg = "#pragma config WDT = OFF\n#pragma config XINST = OFF";
+                                mplabx_tris = "TRISCbits.TRISC0";
                             }
-                            mplabx_tris = "TRISBbits.TRISB0";
-                            mplabx_pin = "LATBbits.LB0";
-                        } else {
+
+                            mplabx_pin = "LATCbits.LC0";
+                        } else {  // PIC16F
                             mplabx_cfg = "#pragma config WDTE = OFF";
-                            mplabx_tris = "TRISBbits.TRISB0";
-                            mplabx_pin = "PORTBbits.RB0";
+                            if (!processor.compare("PIC16F1827") || !processor.compare("PIC16F1847") ||
+                                !processor.compare("PIC16F628A") || !processor.compare("PIC16F648A") ||
+                                !processor.compare("PIC16F84A") || !processor.compare("PIC16F819")) {
+                                mplabx_tris = "TRISBbits.TRISB0";
+                                mplabx_pin = "PORTBbits.RB0";
+
+                            } else if (!processor.compare("PIC16F1619") || !processor.compare("PIC16F1829") ||
+                                       !processor.compare("PIC16F18324")) {
+                                mplabx_tris = "ANSELCbits.ANSC0 = 0;\nTRISCbits.TRISC0";
+                                mplabx_pin = "PORTCbits.RC0";
+                            } else {
+                                mplabx_tris = "TRISCbits.TRISC0";
+                                mplabx_pin = "PORTCbits.RC0";
+                            }
                         }
                     } else {
                         // avr blink has not configuration yet
@@ -682,7 +714,7 @@ int CPWindow6::CreateProject(const std::string ide, const std::string framework,
                         (const char*)(lxString("File ") + prjdir + "nbproject/project.xml can't be open!").utf8_str());
                     return 1;
                 }
-                fprintf(fproj, project_xml, prj_name, time(NULL));
+                fprintf(fproj, project_xml, prj_name, (unsigned long)time(NULL));
                 fclose(fproj);
 
                 // configurations

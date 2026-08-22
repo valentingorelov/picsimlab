@@ -784,6 +784,16 @@ int CPICSimLab::SaveWorkspace(std::string fnpzw) {
 
     strncpy(code_src, pboard->GetPWActiveProject().c_str(), 511);
 
+#ifdef _WIN_
+    char* code_src_p = code_src;
+    while (*code_src_p) {
+        if (*code_src_p == '\\') {
+            *code_src_p = '/';
+        }
+        code_src_p++;
+    }
+#endif
+
     if ((strlen(code_src) > 2) && (SystemCmd(PSC_DIREXISTS, code_src))) {
         char code_dst[512];
 
@@ -855,7 +865,7 @@ int CPICSimLab::SaveWorkspace(std::string fnpzw) {
     time_t now = time(NULL);
     char date_str[26];
 
-#if defined(_WIN32) || defined(_WIN64)
+#if defined(_WIN_)
     if (ctime_s(date_str, sizeof(date_str), &now) == 0)
 #else
     if (ctime_r(&now, date_str) != NULL)
